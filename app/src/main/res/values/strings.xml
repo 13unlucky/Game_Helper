@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Game Helper</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Domino</string>
     <string name="action_settings">Settings</string>
-
+    <string name="pictureButton">Take Picture</string>
+    <string name="CountButton">Count</string>
+    <string name="showPicture">Show Picture</string>
+    showPicture
 </resources>
