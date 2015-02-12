@@ -52,4 +52,12 @@ public class DominoVertex {
             return false;
         }
     }
+
+    /**
+     * Dumps a copy of the edges in this vertex.
+     * @return Returns a copy of the edges in this vertex.
+     */
+    public boolean[] dumpEdges() {
+        return edgeList.clone();
+    }
 }

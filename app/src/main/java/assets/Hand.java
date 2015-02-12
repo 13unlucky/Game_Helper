@@ -51,7 +51,6 @@ public class Hand {
     }
 
     public Domino[] toArray() {
-        //TODO verify that this works
-        return (Domino []) currentHand.toArray();
+        return currentHand.toArray(new Domino[currentHand.size()]);
     }
 }

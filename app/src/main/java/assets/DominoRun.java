@@ -28,6 +28,12 @@ public class DominoRun {
         return path.removeLast();
     }
 
+    public Domino popFront() {
+        length--;
+        pointVal -= path.getFirst().getSum();
+        return path.removeFirst();
+    }
+
     /**
      * compares two domino chains by length.
      * @param other The other domino chain to compare to.
@@ -57,6 +63,10 @@ public class DominoRun {
 
     public int getLength() {
         return length;
+    }
+
+    public int numMoves() {
+        return getLength();
     }
 
     public int getPointVal() {
