@@ -1,4 +1,4 @@
-package assets;
+package game.gamehelper.javaFiles;
 
 /**
  * Created by Jacob on 2/11/2015.

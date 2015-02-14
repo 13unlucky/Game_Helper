@@ -1,4 +1,4 @@
-package assets;
+package game.gamehelper.javaFiles;
 
 import java.util.LinkedList;
 

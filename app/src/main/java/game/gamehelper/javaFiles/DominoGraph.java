@@ -1,6 +1,4 @@
-package assets;
-
-import java.util.List;
+package game.gamehelper.javaFiles;
 
 /**
  * Created by Jacob on 2/11/2015.

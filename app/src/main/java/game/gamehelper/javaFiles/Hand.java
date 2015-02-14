@@ -1,7 +1,9 @@
-package assets;
+package game.gamehelper.javaFiles;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import game.gamehelper.javaFiles.Domino;
 
 /**
  * Created by Jacob on 2/11/2015.
