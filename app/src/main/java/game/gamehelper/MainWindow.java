@@ -9,8 +9,12 @@ import android.app.Activity;
 import android.view.View;
 import android.content.Intent;
 
+import java.util.Random;
+
 
 public class MainWindow extends ActionBarActivity {
+    public static int[][] tileList = new int[100][2];
+    public static int totalTiles = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,8 @@ public class MainWindow extends ActionBarActivity {
         Button newGameButton = (Button)findViewById(R.id.newGameButton);
         Button cameraButton = (Button)findViewById(R.id.cameraButton);
         Button exitButton = (Button)findViewById(R.id.exitButton);
+
+        randomDominos(9);
 
         newGameButton.setOnClickListener(
                 new Button.OnClickListener(){
@@ -74,5 +80,35 @@ public class MainWindow extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    static void randomDominos(int total){
+        Random generator = new Random();
+        boolean[][] used = new boolean[13][13];
+        tileList[0][0] = generator.nextInt(12);
+        tileList[0][1] = generator.nextInt(12);
+
+        for(boolean[] a : used){
+            for(boolean b : a)
+                b = false;
+        }
+
+        for(int[] i : tileList){
+
+            if(total-- <= 0)
+                break;
+
+            while(used[i[0]][i[1]] != false) {
+                i[0] = generator.nextInt(12);
+                i[1] = generator.nextInt(12);
+            }
+            used[i[0]][i[1]] = true;
+            used[i[1]][i[0]] = true;
+            totalTiles++;
+
+
+
+
+        }
     }
 }
