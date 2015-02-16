@@ -1,4 +1,4 @@
-package assets;
+package dominosource;
 
 import java.util.LinkedList;
 

@@ -1,4 +1,4 @@
-package assets;
+package dominosource;
 
 /**
  * Created by Jacob on 2/11/2015.
