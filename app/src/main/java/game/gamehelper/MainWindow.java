@@ -5,16 +5,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.app.Activity;
 import android.view.View;
 import android.content.Intent;
 
 import java.util.Random;
 
-
 public class MainWindow extends ActionBarActivity {
-    public static int[][] tileList = new int[100][2];
-    public static int totalTiles = 0;
+    public int[][] tileList = new int[100][2];
+    public int totalTiles = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +25,31 @@ public class MainWindow extends ActionBarActivity {
         Button newGameButton = (Button)findViewById(R.id.newGameButton);
         Button cameraButton = (Button)findViewById(R.id.cameraButton);
         Button exitButton = (Button)findViewById(R.id.exitButton);
+        Button randomButton = (Button)findViewById(R.id.randomButton);
 
-        randomDominos(9);
+        final Bundle bundle = new Bundle();
 
         newGameButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
-                        startActivity(new Intent(MainWindow.this, GameWindow.class));
+                        bundle.clear();
+                        bundle.putSerializable("dominoList", tileList);
+                        bundle.putInt("dominoTotal", totalTiles);
+                        startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
                     }
                 }
+        );
 
+        randomButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    public void onClick(View v){
+                        randomDominos(9);
+                        bundle.clear();
+                        bundle.putSerializable("dominoList", tileList);
+                        bundle.putInt("dominoTotal", totalTiles);
+                        startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
+                    }
+                }
         );
 
         cameraButton.setOnClickListener(
@@ -45,7 +58,6 @@ public class MainWindow extends ActionBarActivity {
                         startActivity(new Intent(MainWindow.this, MainActivity.class));
                     }
                 }
-
         );
 
         exitButton.setOnClickListener(
@@ -55,7 +67,6 @@ public class MainWindow extends ActionBarActivity {
                         System.exit(0);
                     }
                 }
-
         );
     }
 
@@ -82,11 +93,10 @@ public class MainWindow extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    static void randomDominos(int total){
+    //generate a random set of tiles for hand
+    public void randomDominos(int total){
         Random generator = new Random();
         boolean[][] used = new boolean[13][13];
-        tileList[0][0] = generator.nextInt(12);
-        tileList[0][1] = generator.nextInt(12);
 
         for(boolean[] a : used){
             for(boolean b : a)
@@ -97,6 +107,9 @@ public class MainWindow extends ActionBarActivity {
 
             if(total-- <= 0)
                 break;
+
+            i[0] = generator.nextInt(12);
+            i[1] = generator.nextInt(12);
 
             while(used[i[0]][i[1]] != false) {
                 i[0] = generator.nextInt(12);

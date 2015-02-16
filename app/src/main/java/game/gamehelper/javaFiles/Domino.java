@@ -34,7 +34,7 @@ public class Domino implements Parcelable{
      * @param value1 Pair value 1.
      * @param value2 Pair value 2.
      */
-    public Domino(int value1, int value2, Context context) {
+    public Domino(int value1, int value2) {
         val1 = value1;
         val2 = value2;
         sum = getVal1() + getVal2();
@@ -147,6 +147,8 @@ public class Domino implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeIntArray(new int[]{val1, val2, sum});
+        dest.writeParcelable(domino, 0);
+        dest.writeInt(val1);
+        dest.writeInt(val2);
     }
 }

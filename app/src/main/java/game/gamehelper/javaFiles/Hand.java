@@ -24,16 +24,16 @@ public class Hand {
     private static int LARGEST_DOUBLE;
 
     //Initializes the hand
-    public Hand(int[][] tileList, Context context) {
+    public Hand(int[][] tileList, int totalTiles) {
         handAll = new ArrayList<Domino>();
-        totalDominos = MainWindow.totalTiles;
+        totalDominos = totalTiles;
 
         //create list of tiles
         for(int[] i : tileList){
             if( totalDominos-- <= 0 )
                 break;
 
-            handAll.add(new Domino(i[0], i[1],context));
+            handAll.add(new Domino(i[0], i[1]));
             totalPointsHand += i[0] + i[1];
 
             //find largest double
@@ -41,7 +41,7 @@ public class Hand {
                 largestDouble = i[0];
         }
 
-        totalDominos = MainWindow.totalTiles;
+        totalDominos = totalTiles;
 
         //currentHand = new ArrayList<Domino>();
         //sumCurrentHand = 0;
@@ -80,6 +80,10 @@ public class Hand {
 
     public Domino[] toArray() {
         return handAll.toArray(new Domino[handAll.size()]);
+    }
+
+    public int getLargestDouble(){
+        return largestDouble;
     }
 
 }

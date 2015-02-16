@@ -10,5 +10,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_game_window">GameWindow</string>
     <string name="title_activity_score_board">ScoreBoard</string>
+    <string name="remainingPoints">0</string>
 
 </resources>

@@ -2,7 +2,6 @@ package game.gamehelper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import game.gamehelper.javaFiles.Domino;
 
 /**
  * Created by Mark Andrews on 2/14/2015.
+ * Adapter for image lists
  */
 public class DominoAdapter extends ArrayAdapter {
 
@@ -25,17 +25,12 @@ public class DominoAdapter extends ArrayAdapter {
         super(context, layoutResourceId, data);
         this.context = context;
         this.data = data;
-//        if(data != null)
-//            this.data = data;
-//        else
-//            this.data = new Domino[1];
         this.layoutResourceId = layoutResourceId;
     }
 
+    //Updates view for list
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-
-
         DominoHolder holder = null;
         Domino piece;
 
@@ -52,6 +47,10 @@ public class DominoAdapter extends ArrayAdapter {
         {
             holder = (DominoHolder) row.getTag();
         }
+
+        if(data == null)
+            return row;
+
 
         piece = data[position];
         holder.domino.setImageBitmap(piece.getDomino(50));
