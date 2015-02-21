@@ -47,7 +47,7 @@ public class GameWindow extends ActionBarActivity {
         if(bundle != null) {
             if (bundle.getInt("dominoTotal") != 0) {
                 hand = new Hand((int[][]) bundle.getSerializable("dominoList"),
-                        bundle.getInt("dominoTotal"));
+                        bundle.getInt("dominoTotal"), bundle.getInt("maxDouble"));
 
                 //generate bitmaps for hand
                 for (Domino a : hand.toArray())
@@ -150,7 +150,7 @@ public class GameWindow extends ActionBarActivity {
         canvas.drawBitmap(side1, 0, 0, null);
         canvas.drawBitmap(side2, side2.getWidth(), 0, null);
 
-        a.setDomino(bg);
+        a.setDominoPic(bg);
     }
 
     //Load image for domino side value
