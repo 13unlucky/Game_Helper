@@ -13,6 +13,7 @@ import java.util.Random;
 public class MainWindow extends ActionBarActivity {
     public int[][] tileList = new int[100][2];
     public int totalTiles = 0;
+    public int maxDouble = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class MainWindow extends ActionBarActivity {
                         bundle.clear();
                         bundle.putSerializable("dominoList", tileList);
                         bundle.putInt("dominoTotal", totalTiles);
+                        bundle.putInt("maxDouble", maxDouble);
                         startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
                     }
                 }
@@ -47,6 +49,7 @@ public class MainWindow extends ActionBarActivity {
                         bundle.clear();
                         bundle.putSerializable("dominoList", tileList);
                         bundle.putInt("dominoTotal", totalTiles);
+                        bundle.putInt("maxDouble", maxDouble);
                         startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
                     }
                 }
@@ -94,6 +97,7 @@ public class MainWindow extends ActionBarActivity {
     }
 
     //generate a random set of tiles for hand
+    //produces a maximum double of 12
     public void randomDominos(int total){
         Random generator = new Random();
         boolean[][] used = new boolean[13][13];
@@ -108,20 +112,18 @@ public class MainWindow extends ActionBarActivity {
             if(total-- <= 0)
                 break;
 
-            i[0] = generator.nextInt(12);
-            i[1] = generator.nextInt(12);
+            i[0] = generator.nextInt(13);
+            i[1] = generator.nextInt(13);
 
             while(used[i[0]][i[1]] != false) {
-                i[0] = generator.nextInt(12);
-                i[1] = generator.nextInt(12);
+                i[0] = generator.nextInt(13);
+                i[1] = generator.nextInt(13);
             }
             used[i[0]][i[1]] = true;
             used[i[1]][i[0]] = true;
             totalTiles++;
 
-
-
-
+            maxDouble = 12;
         }
     }
 }
