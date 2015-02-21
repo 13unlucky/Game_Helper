@@ -4,27 +4,30 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.File;
-
 import game.gamehelper.R;
+/**
+ * Author History:
+ * Jacob
+ * Mark
+ * Jacob
+ */
 
 /**
  * Created by Jacob on 2/11/2015.
  * A domino: defined as value 1, value 2, and sum of values.
- * TODO add more functionality.
+ * Has a picture, along
  */
-public class Domino implements Parcelable{
+public class Domino implements Parcelable {
     private final int val1;
     private final int val2;
     private final int sum;
-    private Bitmap domino;
+    private Bitmap dominoPic;
 
     @Override
+    //required for Parcelable
     public int describeContents() {
         return 0;
     }
@@ -54,29 +57,27 @@ public class Domino implements Parcelable{
         return sum;
     }
 
-    public void setDomino(Bitmap a){
-        domino = a;
+    public void setDominoPic(Bitmap a){
+        dominoPic = a;
     }
 
     //Load background and write each side on top
-    public void buildDomino(Context context){
+    public void buildDomino(Context context) {
 
         Bitmap side1;
         Bitmap side2;
-        domino = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_bg);
-        //domino = BitmapFactory.decodeFile("dom_bg.png");
+        dominoPic = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_bg);
+        //dominoPic = BitmapFactory.decodeFile("dom_bg.png");
         side1 = getSide(val1, context);
         side2 = getSide(val2, context);
 
-        Canvas canvas = new Canvas(domino);
+        Canvas canvas = new Canvas(dominoPic);
         canvas.drawBitmap(side1, 0, 0, null);
         canvas.drawBitmap(side2, 200, 0, null);
-
-
     }
 
-    //Load image for domino side value
-    private Bitmap getSide(int value, Context context){
+    //Load image for dominoPic side value
+    private Bitmap getSide(int value, Context context) {
 
         Bitmap side;
 
@@ -125,21 +126,22 @@ public class Domino implements Parcelable{
         return side;
     }
 
-    //return domino bitmap scaled by argument as a percent
-    public Bitmap getDomino(double scale){
+    //return dominoPic bitmap scaled by argument as a percent
+    public Bitmap getDomino(double scale) {
 
-        int width = (int) (domino.getWidth() * scale/100);
-        int height = (int) (domino.getHeight() * scale/100);
+        int width = (int) (dominoPic.getWidth() * scale/100);
+        int height = (int) (dominoPic.getHeight() * scale/100);
 
-        Bitmap scaledDomino = Bitmap.createScaledBitmap(domino, width, height, true);
+        Bitmap scaledDomino = Bitmap.createScaledBitmap(dominoPic, width, height, true);
 
         return scaledDomino;
     }
 
-    public Boolean compareTo(Domino a){
-        if(val1 == a.getVal1() && val2 == a.getVal2())
+    //Allows comparison between other dominoes
+    public boolean compareTo(Domino a) {
+        if (val1 == a.getVal1() && val2 == a.getVal2())
             return true;
-        if(val1 == a.getVal2() && val2 == a.getVal1())
+        if (val1 == a.getVal2() && val2 == a.getVal1())
             return true;
         return false;
     }
@@ -147,7 +149,7 @@ public class Domino implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(domino, 0);
+        dest.writeParcelable(dominoPic, 0);
         dest.writeInt(val1);
         dest.writeInt(val2);
     }
