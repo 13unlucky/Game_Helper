@@ -49,12 +49,22 @@ public class GameWindow extends ActionBarActivity {
                 hand = new Hand((int[][]) bundle.getSerializable("dominoList"),
                         bundle.getInt("dominoTotal"), bundle.getInt("maxDouble"));
 
-                //generate bitmaps for hand
-                for (Domino a : hand.toArray())
-                    buildDomino(a);
-
                 //create domino array for adapter, set text and image to corresponding values
-                data = hand.toArray();
+                Domino temp[] = hand.toArray();
+
+                data = new Domino[(temp.length < 10) ? temp.length : 10];
+
+                //generate bitmaps for hand
+                //ONLY for the first 10 dominoes.
+                for (int i = 0; i < data.length; i++) {
+                    data[i] = temp[i];
+                    buildDomino(data[i]);
+                }
+
+                //for (Domino a : hand.toArray())
+                //    buildDomino(a);
+
+
                 text.setText(Integer.toString(hand.getTotalPointsHand()));
                 image.setImageBitmap(getSide(hand.getLargestDouble()));
             }
@@ -63,6 +73,11 @@ public class GameWindow extends ActionBarActivity {
         //set ListView adapter to display list of dominos
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
         listView.setAdapter(adapter);
+
+        //THIS IS A HACK. REMOVE. USED FOR DEBUGGING PURPOSES.
+//        Domino [] longestRun = hand.getLongestRun().toArray();
+//        adapter = new DominoAdapter(this, R.layout.hand_display_grid, longestRun);
+//        listView.setAdapter(adapter);
 
         addButtonBehavior();
     }
@@ -79,6 +94,29 @@ public class GameWindow extends ActionBarActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         // TODO Add behavior
+                        //clear memory
+                        for (Domino d : hand.toArray()) {
+                            d.deletePic();
+                        }
+                        Domino temp[] = new Domino[1];
+                        temp[0] = new Domino(0, 0);
+                        buildDomino(temp[0]);
+                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+                        listView.setAdapter(adapter);
+
+                        //set ListView adapter to display list of dominos
+                        temp = hand.getLongestRun().toArray();
+
+                        Domino viewLongestRun[] = new Domino[(temp.length < 10) ? temp.length : 10];
+
+                        //generate bitmaps for hand (first 10 values, or memory crash).
+                        for (int i = 0; i < viewLongestRun.length; i++) {
+                            viewLongestRun[i] = temp[i];
+                            buildDomino(viewLongestRun[i]);
+                        }
+
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewLongestRun);
+                        listView.setAdapter(adapter);
                     }
                 }
         );
@@ -88,6 +126,29 @@ public class GameWindow extends ActionBarActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         // TODO Add behavior
+                        //clear memory
+                        for (Domino d : hand.toArray()) {
+                            d.deletePic();
+                        }
+                        Domino temp[] = new Domino[1];
+                        temp[0] = new Domino(0, 0);
+                        buildDomino(temp[0]);
+                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+                        listView.setAdapter(adapter);
+
+                        //set ListView adapter to display list of dominos
+                        temp = hand.getMostPointRun().toArray();
+
+                        Domino viewMostPointRun[] = new Domino[(temp.length < 10) ? temp.length : 10];
+
+                        //generate bitmaps for hand (first 10 values, or memory crash).
+                        for (int i = 0; i < viewMostPointRun.length; i++) {
+                            viewMostPointRun[i] = temp[i];
+                            buildDomino(viewMostPointRun[i]);
+                        }
+
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewMostPointRun);
+                        listView.setAdapter(adapter);
                     }
                 }
         );
@@ -105,7 +166,29 @@ public class GameWindow extends ActionBarActivity {
         undo.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // TODO Add behavior
+                        // TODO Add real behavior
+                        //clear memory
+                        for (Domino d : hand.toArray()) {
+                            d.deletePic();
+                        }
+                        Domino temp[] = new Domino[1];
+                        temp[0] = new Domino(0, 0);
+                        buildDomino(temp[0]);
+                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+                        listView.setAdapter(adapter);
+
+                        //set ListView adapter to display list of dominos
+                        temp = hand.toArray();
+                        Domino viewHand[] = new Domino[(temp.length < 10) ? temp.length : 10];
+
+                        //generate bitmaps for hand
+                        for (int i = 0; i < viewHand.length; i++) {
+                            viewHand[i] = temp[i];
+                            buildDomino(viewHand[i]);
+                        }
+
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewHand);
+                        listView.setAdapter(adapter);
                     }
                 }
         );
