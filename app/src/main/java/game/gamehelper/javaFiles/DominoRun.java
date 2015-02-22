@@ -8,30 +8,39 @@ import java.util.LinkedList;
  */
 public class DominoRun {
     private LinkedList<Domino> path;
-    private int length;
     private int pointVal;
 
     DominoRun() {
-        length = 0;
         pointVal = 0;
+        path = new LinkedList<Domino>();
     }
 
     public void addDomino(Domino d) {
         path.addLast(d);
-        length++;
         pointVal += d.getSum();
     }
 
+    public void addDominoFront(Domino d) {
+        path.addFirst(d);
+        pointVal += d.getSum();
+    }
+
+    public Domino peekFront() {
+        return path.peek();
+    }
+
     public Domino popEnd() {
-        length--;
         pointVal -= path.getLast().getSum();
         return path.removeLast();
     }
 
     public Domino popFront() {
-        length--;
         pointVal -= path.getFirst().getSum();
         return path.removeFirst();
+    }
+
+    public void clear() {
+        path.clear();
     }
 
     /**
@@ -39,8 +48,8 @@ public class DominoRun {
      * @param other The other domino chain to compare to.
      * @return True, if this one is longer than the other.
      */
-    public boolean isLonger(DominoRun other) {
-        return (getLength() > other.getLength());
+    public boolean isLongerThan(DominoRun other) {
+        return (this.getLength() > other.getLength());
     }
 
     /**
@@ -48,8 +57,8 @@ public class DominoRun {
      * @param other The other domino chain to compare to.
      * @return True, if this one is worth more points than the other.
      */
-    public boolean hasMorePoints(DominoRun other) {
-        return (getPointVal() > other.getPointVal());
+    public boolean hasMorePointsThan(DominoRun other) {
+        return (this.getPointVal() > other.getPointVal());
     }
 
     /**
@@ -58,18 +67,33 @@ public class DominoRun {
      * @return True, if this one has more points and is longer than the other one.
      */
     public boolean isBetterThan(DominoRun other) {
-        return (isLonger(other) && hasMorePoints(other));
+        return (this.isLongerThan(other) && this.hasMorePointsThan(other));
     }
 
     public int getLength() {
-        return length;
+        return path.size();
     }
 
     public int numMoves() {
-        return getLength();
+        return this.getLength();
     }
 
     public int getPointVal() {
         return pointVal;
+    }
+
+    //Deep copy of this run.
+    public DominoRun deepCopy() {
+        DominoRun copy = new DominoRun();
+
+        for (Domino d : path) {
+            copy.addDomino(d);
+        }
+        return copy;
+    }
+
+    //returns these dominoes as an array.
+    public Domino[] toArray() {
+        return path.toArray(new Domino[path.size()]);
     }
 }
