@@ -1,9 +1,5 @@
 package game.gamehelper.javaFiles;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -18,14 +14,11 @@ import game.gamehelper.R;
 /**
  * Created by Jacob on 2/11/2015.
  * A domino: defined as value 1, value 2, and sum of values.
- * Has a picture, along
- * TODO fix memory leak; picture will never get destroyed this way because of Java reference-counting.
  */
 public class Domino implements Parcelable {
     private final int val1;
     private final int val2;
     private final int sum;
-//    private Bitmap dominoPic;
 
     @Override
     //required for Parcelable
@@ -43,7 +36,6 @@ public class Domino implements Parcelable {
         val2 = value2;
         sum = getVal1() + getVal2();
 
-        //buildDomino(context);
     }
 
     public int getVal1() {
@@ -58,88 +50,6 @@ public class Domino implements Parcelable {
         return sum;
     }
 
-//    public void setDominoPic(Bitmap a){
-//        dominoPic = a;
-//    }
-
-//    public void deletePic() { dominoPic = null ; }
-
-//    //Load background and write each side on top
-//    public void buildDomino(Context context) {
-//
-//        Bitmap side1;
-//        Bitmap side2;
-//        dominoPic = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_bg);
-//        //dominoPic = BitmapFactory.decodeFile("dom_bg.png");
-//        side1 = getSide(val1, context);
-//        side2 = getSide(val2, context);
-//
-//        Canvas canvas = new Canvas(dominoPic);
-//        canvas.drawBitmap(side1, 0, 0, null);
-//        canvas.drawBitmap(side2, 200, 0, null);
-//    }
-//
-//    //Load image for dominoPic side value
-//    private Bitmap getSide(int value, Context context) {
-//
-//        Bitmap side;
-//
-//        switch(value){
-//            case 1:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_one);
-//                break;
-//            case 2:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_two);
-//                break;
-//            case 3:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_three);
-//                break;
-//            case 4:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_four);
-//                break;
-//            case 5:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_five);
-//                break;
-//            case 6:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_six);
-//                break;
-//            case 7:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_seven);
-//                break;
-//            case 8:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_eight);
-//                break;
-//            case 9:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_nine);
-//                break;
-//            case 10:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_ten);
-//                break;
-//            case 11:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_eleven);
-//                break;
-//            case 12:
-//                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_twelve);
-//                break;
-//            case 0:
-//            default:
-//                side = Bitmap.createBitmap(200,200,Bitmap.Config.ARGB_8888);
-//                break;
-//        }
-//        return side;
-//    }
-
-//    //return dominoPic bitmap scaled by argument as a percent
-//    public Bitmap getDomino(double scale) {
-//
-//        int width = (int) (dominoPic.getWidth() * scale/100);
-//        int height = (int) (dominoPic.getHeight() * scale/100);
-//
-//        Bitmap scaledDomino = Bitmap.createScaledBitmap(dominoPic, width, height, true);
-//
-//        return scaledDomino;
-//    }
-
     //Allows comparison between other dominoes
     public boolean compareTo(Domino a) {
         if (val1 == a.getVal1() && val2 == a.getVal2())
@@ -152,7 +62,6 @@ public class Domino implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeParcelable(dominoPic, 0);
         dest.writeInt(val1);
         dest.writeInt(val2);
     }

@@ -61,7 +61,6 @@ public class DominoAdapter extends ArrayAdapter {
 
     }
 
-
     //Load background and write each side on top
     public Bitmap buildDomino(Domino a, View view, double scale){
 
@@ -142,10 +141,6 @@ public class DominoAdapter extends ArrayAdapter {
                 break;
         }
         return side;
-    }
-
-    public void clearList(){
-
     }
 
     private class DominoHolder{
