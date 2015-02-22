@@ -19,6 +19,7 @@ import game.gamehelper.R;
  * Created by Jacob on 2/11/2015.
  * A domino: defined as value 1, value 2, and sum of values.
  * Has a picture, along
+ * TODO fix memory leak; picture will never get destroyed this way because of Java reference-counting.
  */
 public class Domino implements Parcelable {
     private final int val1;
@@ -60,6 +61,8 @@ public class Domino implements Parcelable {
     public void setDominoPic(Bitmap a){
         dominoPic = a;
     }
+
+    public void deletePic() { dominoPic = null ; }
 
     //Load background and write each side on top
     public void buildDomino(Context context) {
