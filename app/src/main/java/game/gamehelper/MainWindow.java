@@ -45,7 +45,8 @@ public class MainWindow extends ActionBarActivity {
         randomButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
-                        randomDominos(9);
+                        //TODO only works up to 27-ish. 28 if you want to wait a while.
+                        randomDominos(24);
                         bundle.clear();
                         bundle.putSerializable("dominoList", tileList);
                         bundle.putInt("dominoTotal", totalTiles);
@@ -99,13 +100,19 @@ public class MainWindow extends ActionBarActivity {
     //generate a random set of tiles for hand
     //produces a maximum double of 12
     public void randomDominos(int total){
-        Random generator = new Random();
+        Random generator = new Random(222);
         boolean[][] used = new boolean[13][13];
+
+        if (total > (13 * 14 / 2 - 1)) {
+            total = (13 * 14 / 2) - 1;
+        }
 
         for(boolean[] a : used){
             for(boolean b : a)
                 b = false;
         }
+
+        used[maxDouble][maxDouble] = true;
 
         for(int[] i : tileList){
 
