@@ -186,77 +186,9 @@ public class DominoGraph {
         mostPointRuns.clear();
     }
 
-    /*
-    //Does a pseudo-DFS of the graph. NOT USED RIGHT NOW, SEE BELOW.
-    //MIGHT be O(v!), where v = vertices in graph.
-    //TODO fix this brute force to use dynamic programming (maybe table based)
-    private void traverse(int startVertex, LinkedList<DominoRun> mostPointRuns, LinkedList<DominoRun> longestRuns, DominoRun currentRun) {
-        //this should fix stackoverflows.
-        //first = vertex. Second = nextLookAt
-        LinkedList<Pair<Integer, Integer>> stack = new LinkedList<Pair<Integer, Integer>>();
-
-        stack.push(new Pair(startVertex, 0));
-        while (!stack.isEmpty()) {
-            Pair<Integer, Integer> popped = stack.pop();
-
-            //we're returning from this vertex. Nothing to look at.
-            if (popped.second > MAX_EDGE) {
-                continue;
-            }
-
-            startVertex = popped.first;
-
-            //the current run has ended! Calculate runs!
-            if (graph[startVertex].getEdgeNum() == 0) {
-                //this run isn't useful in terms of points
-                if (mostPoints.hasMorePointsThan(currentRun)) {
-                    ;
-                }
-                //this run is so useful in terms of points, we have to get rid of the other runs.
-                else if (currentRun.hasMorePointsThan(mostPoints)) {
-                    mostPointRuns.clear();
-                    mostPointRuns.add(currentRun.deepCopy());
-                    mostPoints = currentRun.deepCopy();
-                }
-                //this run has the same point value as the other runs.
-                else {
-                    mostPointRuns.add(currentRun.deepCopy());
-                }
-
-                //this run isn't useful in terms of length
-                if (longest.isLongerThan(currentRun)) {
-                    ;
-                }
-                //this run is so useful in terms of length, we have to get rid of the other runs.
-                else if (currentRun.isLongerThan(longest)) {
-                    longestRuns.clear();
-                    longestRuns.add(currentRun.deepCopy());
-                    longest = currentRun.deepCopy();
-                }
-                //this run has the same length as the other runs.
-                else {
-                    longestRuns.add(currentRun.deepCopy());
-                }
-
-                //exit up to the other runs, this one's done!
-                return;
-            }
-
-            //Look at the edges in this vertex.
-            for (int i = popped.second; i <= MAX_EDGE; i++) {
-                if (hasEdge(startVertex, i)) {
-                    toggleEdgePair(startVertex, i);
-                    currentRun.addDomino(new Domino(startVertex, i));
-                    currentRun.popEnd();
-                }
-            }
-        }
-    }*/
-
     //Does a pseudo-DFS of the graph.
     //MIGHT be O(v!), where v = vertices in graph.
-    //TODO this is the old version that does the stackoverflow
-    //TODO sorta fixed. works with up to 80 dominoes.
+    //TODO sorta fixed. works with up to 27 dominoes.
     private boolean traverse(int startVertex) {
         //the current run has ended! Calculate runs!
         if (graph[startVertex].getEdgeNum() == 0) {
