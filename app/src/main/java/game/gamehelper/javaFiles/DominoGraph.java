@@ -1,9 +1,6 @@
 package game.gamehelper.javaFiles;
 
-import android.util.Pair;
-
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
  * Created by Jacob on 2/11/2015.
@@ -15,7 +12,12 @@ public class DominoGraph {
     private final int MAX_EDGE;
     private DominoVertex graph[];
     private int target;
+
+    //debug/stats variables
     private int totalEdgeNum;
+    private int repeatPointsFound;
+    private int repeatLensFound;
+    private int pathsFound;
 
     //path variables
     private boolean pathsAreCurrent;
@@ -25,6 +27,8 @@ public class DominoGraph {
     private LinkedList<DominoRun> mostPointRuns;
     private LinkedList<DominoRun> longestRuns;
     private DominoRun currentRun;
+
+    private int numVisited;
 
     /**
      * Generates a DominoGraph from a domino edge array.
@@ -45,8 +49,13 @@ public class DominoGraph {
         MAX_EDGE = maximumDouble;
 
         graph = new DominoVertex[MAX_EDGE + 1];
-
         totalEdgeNum = 0;
+
+        //debug variables
+        repeatLensFound = 0;
+        repeatPointsFound = 0;
+        numVisited = 0;
+        pathsFound = 0;
 
         //reserves the graph's memory.
         for (int i = 0; i <= MAX_EDGE; i++) {
@@ -108,6 +117,11 @@ public class DominoGraph {
         currentRun = new DominoRun();
         mostPoints = new DominoRun();
         longest = new DominoRun();
+
+        numVisited = 0;
+        repeatLensFound = 0;
+        repeatPointsFound = 0;
+        pathsFound = 0;
 
         //We need to play the max double first! Will only show the max double.
         if (graph[MAX_EDGE].hasEdge(MAX_EDGE)) {
@@ -181,17 +195,24 @@ public class DominoGraph {
             longest = longestRuns.getFirst().deepCopy();
         }
 
+        System.out.println("last repeat lens found: " + repeatLensFound);
+        System.out.println("last repeat points found: " + repeatPointsFound);
+        System.out.println("total vertexs visited: " + numVisited);
+        System.out.println("total paths found: " + pathsFound);
+
         pathsAreCurrent = true;
         longestRuns.clear();
         mostPointRuns.clear();
     }
 
     //Does a pseudo-DFS of the graph.
-    //MIGHT be O(v!), where v = vertices in graph.
+    //is O(e^n), where n is the number of dominoes in the graph.
     //TODO sorta fixed. works with up to 27 dominoes.
     private boolean traverse(int startVertex) {
+        numVisited++;
         //the current run has ended! Calculate runs!
         if (graph[startVertex].getEdgeNum() == 0) {
+            pathsFound++;
             //this run isn't useful in terms of points
             if (mostPoints.hasMorePointsThan(currentRun)) {
                 ;
@@ -201,10 +222,22 @@ public class DominoGraph {
                 mostPointRuns.clear();
                 mostPointRuns.add(currentRun.deepCopy());
                 mostPoints = currentRun.deepCopy();
+                System.out.println("more points: " + repeatPointsFound);
+                repeatPointsFound = 0;
             }
             //this run has the same point value as the other runs.
             else {
-                //mostPointRuns.add(currentRun.deepCopy());
+                //We only want to get rid of the other run if this one is shorter.
+                // If it's shorter, it's getting rid of points faster (on average).
+                if (currentRun.isShorterThan(mostPoints)) {
+                    mostPointRuns.clear();
+                    mostPointRuns.add(currentRun.deepCopy());
+                    mostPoints = currentRun.deepCopy();
+                    System.out.println("more points: " + repeatPointsFound);
+                    repeatPointsFound = 0;
+                }
+                repeatPointsFound++;
+                //mostPointRuns.add(currentRun.deepCopy()); // removed because of memory problems.
             }
 
             //this run isn't useful in terms of length
@@ -218,9 +251,21 @@ public class DominoGraph {
                 longest = currentRun.deepCopy();
                 if (longest.getLength() == totalEdgeNum)
                     return true;
+                System.out.println("longer run: " + repeatLensFound);
+                repeatLensFound = 0;
             }
             //this run has the same length as the other runs.
             else {
+                //We want to get rid of the other run if this one is worth more points.
+                // If it's worth more points, this one is getting rid of the points faster (on average).
+                if (currentRun.hasMorePointsThan(longest)) {
+                    longestRuns.clear();
+                    longestRuns.add(currentRun.deepCopy());
+                    longest = currentRun.deepCopy();
+                    System.out.println("longer run: " + repeatLensFound);
+                    repeatLensFound = 0;
+                }
+                repeatLensFound++;
                 //longestRuns.add(currentRun.deepCopy());
             }
 

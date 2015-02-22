@@ -53,6 +53,15 @@ public class DominoRun {
     }
 
     /**
+     * compares two domino chains by length.
+     * @param other The other domino chain to compare to.
+     * @return True, if this one is shorter than the other.
+     */
+    public boolean isShorterThan(DominoRun other) {
+        return (this.getLength() > other.getLength());
+    }
+
+    /**
      * compares two domino chains by point value.
      * @param other The other domino chain to compare to.
      * @return True, if this one is worth more points than the other.
