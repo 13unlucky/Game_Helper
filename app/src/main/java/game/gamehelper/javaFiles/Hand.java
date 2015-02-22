@@ -3,10 +3,16 @@ package game.gamehelper.javaFiles;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import game.gamehelper.MainWindow;
 import game.gamehelper.javaFiles.Domino;
+/**
+ * Author History
+ * Jacob
+ * Mark
+ * Jacob
+ */
 
 /**
  * Created by Jacob on 2/11/2015.
@@ -15,38 +21,37 @@ import game.gamehelper.javaFiles.Domino;
  */
 public class Hand {
     private ArrayList<Domino> handAll;
-    private List<Domino> currentHand;
+    private LinkedList<Domino> currentHand;
+
+    private DominoGraph runs;
 
     private int sumCurrentHand = 0;
     private int totalPointsHand = 0;
-    private int largestDouble = -1;
     private int totalDominos;
-    private static int LARGEST_DOUBLE;
+    private final int LARGEST_DOUBLE;
 
     //Initializes the hand
-    public Hand(int[][] tileList, int totalTiles) {
+    //Requires maximum double possible.
+    public Hand(int[][] tileList, int totalTiles, int largestDouble) {
         handAll = new ArrayList<Domino>();
+        currentHand = new LinkedList<Domino>();
         totalDominos = totalTiles;
 
         //create list of tiles
-        for(int[] i : tileList){
-            if( totalDominos-- <= 0 )
+        for (int[] i : tileList) {
+            if (totalDominos-- <= 0)
                 break;
 
             handAll.add(new Domino(i[0], i[1]));
+            currentHand.add(new Domino(i[0], i[1]));
             totalPointsHand += i[0] + i[1];
-
-            //find largest double
-            if(i[0] == i[1] && i[0] > largestDouble)
-                largestDouble = i[0];
         }
 
         totalDominos = totalTiles;
 
-        //currentHand = new ArrayList<Domino>();
-        //sumCurrentHand = 0;
-
         LARGEST_DOUBLE = largestDouble;
+
+        runs = new DominoGraph(this, LARGEST_DOUBLE);
     }
 
     //Adds a domino to the hand, increases point value.
@@ -55,19 +60,25 @@ public class Hand {
         //    throw new AssertionError("Attempted to add double greater than stored maximum double.");
 
         handAll.add(d);
-        //currentHand.add(d);
-        //sumCurrentHand = getSumCurrentHand() + d.getSum();
         totalPointsHand = getTotalPointsHand() + d.getSum();
     }
 
     //Removes a domino to hand if it exists.
     public void removeDomino(Domino d) {
-        for(Domino a : handAll){
-            if(a.compareTo(d)) {
+        for (Domino a : handAll){
+            if (a.compareTo(d)) {
                 handAll.remove(a);
                 break;
             }
         }
+    }
+
+    public DominoRun getLongestRun() {
+        return runs.getLongestPath();
+    }
+
+    public DominoRun getMostPointRun() {
+        return runs.getMostPointPath();
     }
 
     public int getSumCurrentHand() {
@@ -83,7 +94,7 @@ public class Hand {
     }
 
     public int getLargestDouble(){
-        return largestDouble;
+        return LARGEST_DOUBLE;
     }
 
 }
