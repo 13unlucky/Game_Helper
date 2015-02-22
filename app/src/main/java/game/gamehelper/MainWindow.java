@@ -11,6 +11,7 @@ import android.content.Intent;
 import java.util.Random;
 
 public class MainWindow extends ActionBarActivity {
+    public static final int MAX_DOMINO_DISPLAY = 24;
     public int[][] tileList = new int[100][2];
     public int totalTiles = 0;
     public int maxDouble = 12;

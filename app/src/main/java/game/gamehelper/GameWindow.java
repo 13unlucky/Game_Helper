@@ -27,6 +27,7 @@ public class GameWindow extends ActionBarActivity {
     private ListView listView;
     private ImageView image;
     private TextView text;
+    private DominoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +35,6 @@ public class GameWindow extends ActionBarActivity {
         setContentView(R.layout.activity_game_window);
         Bundle bundle = getIntent().getExtras();
 
-        DominoAdapter adapter;
         Domino[] data = new Domino[0];
 
         text = (TextView)findViewById(R.id.remPoint);
@@ -52,13 +52,12 @@ public class GameWindow extends ActionBarActivity {
                 //create domino array for adapter, set text and image to corresponding values
                 Domino temp[] = hand.toArray();
 
-                data = new Domino[(temp.length < 10) ? temp.length : 10];
+                data = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
 
                 //generate bitmaps for hand
                 //ONLY for the first 10 dominoes.
                 for (int i = 0; i < data.length; i++) {
                     data[i] = temp[i];
-                    buildDomino(data[i]);
                 }
 
                 //for (Domino a : hand.toArray())
@@ -95,24 +94,26 @@ public class GameWindow extends ActionBarActivity {
                     public void onClick(View v) {
                         // TODO Add behavior
                         //clear memory
-                        for (Domino d : hand.toArray()) {
-                            d.deletePic();
-                        }
+//                        for (Domino d : hand.toArray()) {
+//                            d.deletePic();
+//                        }
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
-                        buildDomino(temp[0]);
-                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+//                        buildDomino(temp[0]);
+
+                        adapter.clearList();
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
                         //set ListView adapter to display list of dominos
                         temp = hand.getLongestRun().toArray();
 
-                        Domino viewLongestRun[] = new Domino[(temp.length < 10) ? temp.length : 10];
+                        Domino viewLongestRun[] = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
 
                         //generate bitmaps for hand (first 10 values, or memory crash).
                         for (int i = 0; i < viewLongestRun.length; i++) {
                             viewLongestRun[i] = temp[i];
-                            buildDomino(viewLongestRun[i]);
+//                            buildDomino(viewLongestRun[i]);
                         }
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewLongestRun);
@@ -127,24 +128,25 @@ public class GameWindow extends ActionBarActivity {
                     public void onClick(View v) {
                         // TODO Add behavior
                         //clear memory
-                        for (Domino d : hand.toArray()) {
-                            d.deletePic();
-                        }
+//                        for (Domino d : hand.toArray()) {
+//                            d.deletePic();
+//                        }
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
-                        buildDomino(temp[0]);
-                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+//                        buildDomino(temp[0]);
+                        adapter.clearList();
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
                         //set ListView adapter to display list of dominos
                         temp = hand.getMostPointRun().toArray();
 
-                        Domino viewMostPointRun[] = new Domino[(temp.length < 10) ? temp.length : 10];
+                        Domino viewMostPointRun[] = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
 
                         //generate bitmaps for hand (first 10 values, or memory crash).
                         for (int i = 0; i < viewMostPointRun.length; i++) {
                             viewMostPointRun[i] = temp[i];
-                            buildDomino(viewMostPointRun[i]);
+//                            buildDomino(viewMostPointRun[i]);
                         }
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewMostPointRun);
@@ -168,23 +170,25 @@ public class GameWindow extends ActionBarActivity {
                     public void onClick(View v) {
                         // TODO Add real behavior
                         //clear memory
-                        for (Domino d : hand.toArray()) {
-                            d.deletePic();
-                        }
+//                        for (Domino d : hand.toArray()) {
+//                            d.deletePic();
+//                        }
+
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
-                        buildDomino(temp[0]);
-                        DominoAdapter adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
+//                        buildDomino(temp[0]);
+                        adapter.clearList();
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
                         //set ListView adapter to display list of dominos
                         temp = hand.toArray();
-                        Domino viewHand[] = new Domino[(temp.length < 10) ? temp.length : 10];
+                        Domino viewHand[] = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
 
                         //generate bitmaps for hand
                         for (int i = 0; i < viewHand.length; i++) {
                             viewHand[i] = temp[i];
-                            buildDomino(viewHand[i]);
+//                            buildDomino(viewHand[i]);
                         }
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewHand);
@@ -216,26 +220,26 @@ public class GameWindow extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Load background and write each side on top
-    public void buildDomino(Domino a){
-
-        Bitmap side1;
-        Bitmap side2;
-        Bitmap bg;
-
-        bg = BitmapFactory.decodeResource(getResources(), R.drawable.dom_bg);
-        side1 = getSide(a.getVal1());
-        side2 = getSide(a.getVal2());
-
-        //copy immutable bitmap generated previously to a mutable bitmap and impose the sides
-        bg = bg.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(bg);
-        canvas.drawBitmap(side1, 0, 0, null);
-        canvas.drawBitmap(side2, side2.getWidth(), 0, null);
-
-        a.setDominoPic(bg);
-    }
-
+//    //Load background and write each side on top
+//    public void buildDomino(Domino a){
+//
+//        Bitmap side1;
+//        Bitmap side2;
+//        Bitmap bg;
+//
+//        bg = BitmapFactory.decodeResource(getResources(), R.drawable.dom_bg);
+//        side1 = getSide(a.getVal1());
+//        side2 = getSide(a.getVal2());
+//
+//        //copy immutable bitmap generated previously to a mutable bitmap and impose the sides
+//        bg = bg.copy(Bitmap.Config.ARGB_8888, true);
+//        Canvas canvas = new Canvas(bg);
+//        canvas.drawBitmap(side1, 0, 0, null);
+//        canvas.drawBitmap(side2, side2.getWidth(), 0, null);
+//
+//        a.setDominoPic(bg);
+//    }
+//
     //Load image for domino side value
     private Bitmap getSide(int value){
 
