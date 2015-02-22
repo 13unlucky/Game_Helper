@@ -1,20 +1,39 @@
 package game.gamehelper.javaFiles;
 
+import android.util.Pair;
+
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 /**
  * Created by Jacob on 2/11/2015.
  * A Domino graph, made of DominoVertexes.
  * Contains path processing options too.
- * TODO add path processing options.
+ * TODO reduce brute force
  */
 public class DominoGraph {
     private final int MAX_EDGE;
     private DominoVertex graph[];
     private int target;
+    private int totalEdgeNum;
 
     //path variables
     private boolean pathsAreCurrent;
-    DominoRun longest;
-    DominoRun mostPoints;
+    private DominoRun longest;
+    private DominoRun mostPoints;
+
+    private LinkedList<DominoRun> mostPointRuns;
+    private LinkedList<DominoRun> longestRuns;
+    private DominoRun currentRun;
+
+    /**
+     * Generates a DominoGraph from a domino edge array.
+     * @param h The hand to use to initialize the graph.
+     * @param startDouble The starting double to target.
+     */
+    DominoGraph(Hand h, int startDouble) {
+        this (h.getLargestDouble(), h.toArray(), h.getLargestDouble());
+    }
 
     /**
      * Generates a DominoGraph from a domino edge array.
@@ -25,149 +44,281 @@ public class DominoGraph {
     DominoGraph(int maximumDouble, Domino edges[], int startDouble) {
         MAX_EDGE = maximumDouble;
 
-        graph = new DominoVertex[maximumDouble + 1];
+        graph = new DominoVertex[MAX_EDGE + 1];
+
+        totalEdgeNum = 0;
 
         //reserves the graph's memory.
-        for (int i = 0; i <= maximumDouble; i++) {
+        for (int i = 0; i <= MAX_EDGE; i++) {
             graph[i] = new DominoVertex(MAX_EDGE);
         }
 
         //initializes the graph.
         for (Domino d : edges) {
             addEdgePair(d.getVal1(), d.getVal2());
+            totalEdgeNum++;
         }
 
         pathsAreCurrent = false;
         longest = new DominoRun();
         mostPoints = new DominoRun();
         target = startDouble;
+        mostPointRuns = new LinkedList<DominoRun>();
+        longestRuns = new LinkedList<DominoRun>();
+        currentRun = new DominoRun();
     }
 
     /**
-     * Generates a DominoGraph from a domino edge array.
-     * @param maximumDouble The biggest double possible (if double 8) -> 8.
-     * @param h The hand to use to initialize the graph.
-     * @param startDouble The starting double to target.
+     * Adds another domino to this graph.
+     * @param d The domino to add.
      */
-    DominoGraph(int maximumDouble, Hand h, int startDouble) {
-        MAX_EDGE = maximumDouble;
+    public void addDomino(Domino d) {
+        if (d.getVal1() > MAX_EDGE || d.getVal2() > MAX_EDGE)
+            throw new AssertionError("New domino is too large.");
 
-        Domino edges[] = h.toArray();
-
-        graph = new DominoVertex[maximumDouble + 1];
-
-        //reserves the graph's memory.
-        for (int i = 0; i <= maximumDouble; i++) {
-            graph[i] = new DominoVertex(MAX_EDGE);
+        //re-set paths if not here already
+        if (!hasEdge(d.getVal1(), d.getVal2())) {
+            pathsAreCurrent = false;
+            totalEdgeNum++;
         }
 
-        //initializes the graph.
-        for (Domino d : edges) {
-            try {
-                graph[d.getVal1()].addEdge(d.getVal2());
-                graph[d.getVal2()].addEdge(d.getVal1());
-            }
-            catch (ArrayIndexOutOfBoundsException e) {
-                e.printStackTrace();
-                throw new AssertionError("Out of bounds! Bad domino!");
-            }
-        }
-
-        target = startDouble;
+        addEdgePair(d.getVal1(), d.getVal2());
     }
 
     /**
-     * Adds an edge pair to this graph.
-     * @param v1 Vertex 1
-     * @param v2 Vertex 2
+     * Removes a domino in this graph.
+     * Will only throw exceptions when the domino is larger than the maximum domino.
+     * @param d The domino to remove.
      */
-    private void addEdgePair(int v1, int v2) {
-        try {
-            graph[v1].addEdge(v2);
-            graph[v2].addEdge(v1);
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            throw new AssertionError("Out of bounds! Bad domino!");
+    public void removeDomino(Domino d) {
+        if (d.getVal1() > MAX_EDGE || d.getVal2() > MAX_EDGE)
+            throw new AssertionError("Tried to delete domino larger than max domino.");
+
+        //re-set paths if not here already
+        if (hasEdge(d.getVal1(), d.getVal2())) {
+            pathsAreCurrent = false;
+            totalEdgeNum--;
         }
 
-        pathsAreCurrent = false;
+        removeEdgePair(d.getVal1(), d.getVal2());
     }
 
-    /**
-     * Toggles an edge pair in this graph.
-     * @param v1 Vertex 1
-     * @param v2 Vertex 2
-     */
-    private void toggleEdgePair(int v1, int v2) {
-        try {
-            graph[v1].toggleEdge(v2);
-            graph[v2].toggleEdge(v1);
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            throw new AssertionError("Out of bounds! Bad domino!");
-        }
-    }
-
-    /**
-     * Deletes an edge pair from this graph.
-     * @param v1 Vertex 1
-     * @param v2 Vertex 2
-     */
-    private void deleteEdgePair(int v1, int v2) {
-        try {
-            if (graph[v1].hasEdge(v2)) {
-                graph[v1].toggleEdge(v2);
-                graph[v2].toggleEdge(v1);
-            }
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            throw new AssertionError("Out of bounds! Bad domino!");
-        }
-    }
-
-    //TODO unfinished
-    //WARNING: Assumes max double already played.
     //recalculates longest/most point path. Uses brute force.
     private void recalculatePaths() {
-        pathsAreCurrent = true;
+        currentRun = new DominoRun();
+        mostPoints = new DominoRun();
+        longest = new DominoRun();
 
-        DominoRun tempRun = new DominoRun();
+        //We need to play the max double first! Will only show the max double.
+        if (graph[MAX_EDGE].hasEdge(MAX_EDGE)) {
+            currentRun.addDomino(new Domino(MAX_EDGE, MAX_EDGE));
+
+            longest = currentRun.deepCopy();
+            mostPoints = currentRun.deepCopy();
+
+            pathsAreCurrent = true;
+            target = MAX_EDGE;
+            longestRuns.clear();
+            mostPointRuns.clear();
+            return;
+        }
+
+        //we've already played the max double, try to build off the current target.
+        mostPointRuns.clear();
+        longestRuns.clear();
+        currentRun.clear();
+
         //Start edges must be played on the the start.
         boolean startEdges[] = graph[MAX_EDGE].dumpEdges();
 
         //We blank out the start edges.
-        for (int i = 0; i <= MAX_EDGE; i++) {
-            deleteEdgePair(MAX_EDGE, i);
+        for (int i = MAX_EDGE; i >= 0; i--) {
+            removeEdgePair(MAX_EDGE, i);
         }
 
-        //We need to start on the main domino, so we go through each one individually.
+        //We need to start on the main domino, so we go through each possible lead-off individually.
+        //Remember, edges that map to the main domino must be played on the main domino.
         if (target == MAX_EDGE) {
             for (int i = 0; i <= MAX_EDGE; i++) {
                 if (startEdges[i]) {
-                    target = i;
-                    //TODO wrong here, fix
-                    recalculatePaths();
+                    currentRun.clear();
+                    addEdgePair(i, MAX_EDGE);
+                    traverse(MAX_EDGE);
+                    removeEdgePair(i, MAX_EDGE);
                 }
             }
         }
         //Normal case: we don't have to play off the main domino.
         else {
-
+            currentRun.clear();
+            traverse(target);
         }
 
+        //Re-add the edges to the main domino at the end.
+        for (int i = 0; i <= MAX_EDGE; i++) {
+            if (startEdges[i])
+                addEdgePair(MAX_EDGE, i);
+        }
+
+        //simple heuristic to remove copy runs. Still will need more processing by a ProcessRun class.
+        //TODO copy this functionality to a more-functional ProcessRun class
+        if (mostPointRuns.size() > 1) {
+            for (DominoRun run : mostPointRuns) {
+                if (run.isLongerThan(mostPoints))
+                    mostPoints = run.deepCopy();
+            }
+        }
+        else {
+            mostPoints = mostPointRuns.getFirst().deepCopy();
+        }
+        if (longestRuns.size() > 1) {
+            for (DominoRun run : mostPointRuns) {
+                if (run.hasMorePointsThan(longest))
+                    longest = run.deepCopy();
+            }
+        }
+        else {
+            longest = longestRuns.getFirst().deepCopy();
+        }
+
+        pathsAreCurrent = true;
+        longestRuns.clear();
+        mostPointRuns.clear();
     }
 
-    public DominoRun longestPath() {
+    /*
+    //Does a pseudo-DFS of the graph. NOT USED RIGHT NOW, SEE BELOW.
+    //MIGHT be O(v!), where v = vertices in graph.
+    //TODO fix this brute force to use dynamic programming (maybe table based)
+    private void traverse(int startVertex, LinkedList<DominoRun> mostPointRuns, LinkedList<DominoRun> longestRuns, DominoRun currentRun) {
+        //this should fix stackoverflows.
+        //first = vertex. Second = nextLookAt
+        LinkedList<Pair<Integer, Integer>> stack = new LinkedList<Pair<Integer, Integer>>();
+
+        stack.push(new Pair(startVertex, 0));
+        while (!stack.isEmpty()) {
+            Pair<Integer, Integer> popped = stack.pop();
+
+            //we're returning from this vertex. Nothing to look at.
+            if (popped.second > MAX_EDGE) {
+                continue;
+            }
+
+            startVertex = popped.first;
+
+            //the current run has ended! Calculate runs!
+            if (graph[startVertex].getEdgeNum() == 0) {
+                //this run isn't useful in terms of points
+                if (mostPoints.hasMorePointsThan(currentRun)) {
+                    ;
+                }
+                //this run is so useful in terms of points, we have to get rid of the other runs.
+                else if (currentRun.hasMorePointsThan(mostPoints)) {
+                    mostPointRuns.clear();
+                    mostPointRuns.add(currentRun.deepCopy());
+                    mostPoints = currentRun.deepCopy();
+                }
+                //this run has the same point value as the other runs.
+                else {
+                    mostPointRuns.add(currentRun.deepCopy());
+                }
+
+                //this run isn't useful in terms of length
+                if (longest.isLongerThan(currentRun)) {
+                    ;
+                }
+                //this run is so useful in terms of length, we have to get rid of the other runs.
+                else if (currentRun.isLongerThan(longest)) {
+                    longestRuns.clear();
+                    longestRuns.add(currentRun.deepCopy());
+                    longest = currentRun.deepCopy();
+                }
+                //this run has the same length as the other runs.
+                else {
+                    longestRuns.add(currentRun.deepCopy());
+                }
+
+                //exit up to the other runs, this one's done!
+                return;
+            }
+
+            //Look at the edges in this vertex.
+            for (int i = popped.second; i <= MAX_EDGE; i++) {
+                if (hasEdge(startVertex, i)) {
+                    toggleEdgePair(startVertex, i);
+                    currentRun.addDomino(new Domino(startVertex, i));
+                    currentRun.popEnd();
+                }
+            }
+        }
+    }*/
+
+    //Does a pseudo-DFS of the graph.
+    //MIGHT be O(v!), where v = vertices in graph.
+    //TODO this is the old version that does the stackoverflow
+    //TODO sorta fixed. works with up to 80 dominoes.
+    private boolean traverse(int startVertex) {
+        //the current run has ended! Calculate runs!
+        if (graph[startVertex].getEdgeNum() == 0) {
+            //this run isn't useful in terms of points
+            if (mostPoints.hasMorePointsThan(currentRun)) {
+                ;
+            }
+            //this run is so useful in terms of points, we have to get rid of the other runs.
+            else if (currentRun.hasMorePointsThan(mostPoints)) {
+                mostPointRuns.clear();
+                mostPointRuns.add(currentRun.deepCopy());
+                mostPoints = currentRun.deepCopy();
+            }
+            //this run has the same point value as the other runs.
+            else {
+                //mostPointRuns.add(currentRun.deepCopy());
+            }
+
+            //this run isn't useful in terms of length
+            if (longest.isLongerThan(currentRun)) {
+                ;
+            }
+            //this run is so useful in terms of length, we have to get rid of the other runs.
+            else if (currentRun.isLongerThan(longest)) {
+                longestRuns.clear();
+                longestRuns.add(currentRun.deepCopy());
+                longest = currentRun.deepCopy();
+                if (longest.getLength() == totalEdgeNum)
+                    return true;
+            }
+            //this run has the same length as the other runs.
+            else {
+                //longestRuns.add(currentRun.deepCopy());
+            }
+
+            //exit up to the other runs, this one's done!
+            return false;
+        }
+
+        //Look at the edges in this vertex.
+        for (int i = 0; i <= MAX_EDGE; i++) {
+            if (hasEdge(startVertex, i)) {
+                toggleEdgePair(startVertex, i);
+                currentRun.addDomino(new Domino(startVertex, i));
+                if (traverse(i))
+                    return true;
+                currentRun.popEnd();
+                toggleEdgePair(startVertex, i);
+            }
+        }
+
+        return false;
+    }
+
+    public DominoRun getLongestPath() {
         if (!pathsAreCurrent)
             recalculatePaths();
 
         return longest;
     }
 
-    public DominoRun mostPointPath() {
+    public DominoRun getMostPointPath() {
         if (!pathsAreCurrent)
             recalculatePaths();
 
@@ -190,14 +341,81 @@ public class DominoGraph {
     }
 
     /**
+     * Adds an edge pair to this graph.
+     * @param v1 Vertex 1
+     * @param v2 Vertex 2
+     */
+    private void addEdgePair(int v1, int v2) {
+        try {
+            graph[v1].addEdge(v2);
+            graph[v2].addEdge(v1);
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            throw new AssertionError("Out of bounds! Bad domino! Max edge = "
+                                        + MAX_EDGE + ". Found edges = " + (v1) + " " + (v2));
+        }
+
+        pathsAreCurrent = false;
+    }
+
+    /**
+     * Toggles an edge pair in this graph.
+     * @param v1 Vertex 1
+     * @param v2 Vertex 2
+     */
+    private void toggleEdgePair(int v1, int v2) {
+        try {
+            if (v1 != v2) {
+                graph[v1].toggleEdge(v2);
+                graph[v2].toggleEdge(v1);
+            }
+            else {
+                graph[v1].toggleEdge(v2);
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            throw new AssertionError("Out of bounds! Bad domino!");
+        }
+    }
+
+    private boolean hasEdge(int v1, int v2) {
+        return graph[v1].hasEdge(v2) && graph[v2].hasEdge(v1);
+    }
+
+    /**
+     * Deletes an edge pair from this graph.
+     * @param v1 Vertex 1
+     * @param v2 Vertex 2
+     */
+    private void removeEdgePair(int v1, int v2) {
+        try {
+            if (graph[v1].hasEdge(v2)) {
+                if (v1 != v2) {
+                    graph[v1].toggleEdge(v2);
+                    graph[v2].toggleEdge(v1);
+                }
+                else {
+                    graph[v1].toggleEdge(v2);
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            throw new AssertionError("Out of bounds! Bad domino!");
+        }
+    }
+
+    /**
      * Dequeues the longest front, has to re-calculate for the most point path.
      * @return The previous front of the longest list.
      */
     public Domino dequeueLongest() {
         Domino retVal;
 
-        retVal = longestPath().popFront();
+        retVal = getLongestPath().popFront();
         target = retVal.getVal2();
+        removeEdgePair(retVal.getVal1(), retVal.getVal2());
         recalculatePaths();
 
         return retVal;
@@ -210,8 +428,9 @@ public class DominoGraph {
     public Domino dequeueMostPoints() {
         Domino retVal;
 
-        retVal = mostPointPath().popFront();
+        retVal = getMostPointPath().popFront();
         target = retVal.getVal2();
+        removeEdgePair(retVal.getVal1(), retVal.getVal2());
         recalculatePaths();
 
         return retVal;
