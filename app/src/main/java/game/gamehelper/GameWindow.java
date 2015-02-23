@@ -23,7 +23,10 @@ import game.gamehelper.javaFiles.Domino;
 import game.gamehelper.javaFiles.Hand;
 
 
-public class GameWindow extends ActionBarActivity implements NewGameAlertFragment.NewGameAlertListener {
+public class GameWindow extends ActionBarActivity implements
+        NewGameAlertFragment.NewGameAlertListener,
+        DrawFragment.DrawListener{
+
     private Hand hand;
     private ListView listView;
     private ImageView image;
@@ -150,7 +153,9 @@ public class GameWindow extends ActionBarActivity implements NewGameAlertFragmen
         draw.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // TODO Add behavior
+
+                        DialogFragment newFragment = new DrawFragment();
+                        newFragment.show(getSupportFragmentManager(), "Draw_Display");
                     }
                 }
         );
@@ -198,7 +203,6 @@ public class GameWindow extends ActionBarActivity implements NewGameAlertFragmen
 
         switch (item.getItemId()){
             case R.id.action_new_game:
-                //TODO confirmation followed by data wipe
                 DialogFragment newFragment = new NewGameAlertFragment();
                 newFragment.show(getSupportFragmentManager(), "new_game_alert");
 
@@ -296,4 +300,10 @@ public class GameWindow extends ActionBarActivity implements NewGameAlertFragmen
 
     }
 
+    @Override
+    public void onClose(Bundle savedInstanceState) {
+        //From draw button, 2 integers should be included in
+        //bundle, add to hand
+
+    }
 }
