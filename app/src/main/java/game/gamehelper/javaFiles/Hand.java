@@ -54,6 +54,14 @@ public class Hand {
         runs = new DominoGraph(this, LARGEST_DOUBLE);
     }
 
+    public Hand(){
+        handAll = new ArrayList<Domino>();
+        currentHand = new LinkedList<Domino>();
+        totalDominos = 0;
+        LARGEST_DOUBLE = -1;
+
+    }
+
     //Adds a domino to the hand, increases point value.
     public void addDomino(Domino d) {
         //if (d.getVal1() > LARGEST_DOUBLE || d.getVal2() > LARGEST_DOUBLE)

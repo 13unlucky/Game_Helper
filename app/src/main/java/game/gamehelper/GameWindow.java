@@ -7,6 +7,7 @@ package game.gamehelper;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,7 +23,7 @@ import game.gamehelper.javaFiles.Domino;
 import game.gamehelper.javaFiles.Hand;
 
 
-public class GameWindow extends ActionBarActivity {
+public class GameWindow extends ActionBarActivity implements NewGameAlertFragment.NewGameAlertListener {
     private Hand hand;
     private ListView listView;
     private ImageView image;
@@ -60,8 +61,14 @@ public class GameWindow extends ActionBarActivity {
                     data[i] = temp[i];
                 }
 
-                text.setText(Integer.toString(hand.getTotalPointsHand()));
                 image.setImageBitmap(getSide(hand.getLargestDouble()));
+                text.setText(Integer.toString(hand.getTotalPointsHand()));
+            }
+            else
+            {
+                hand = new Hand();
+                data = hand.toArray();
+                text.setText(Integer.toString(hand.getTotalPointsHand()));
             }
         }
 
@@ -192,6 +199,8 @@ public class GameWindow extends ActionBarActivity {
         switch (item.getItemId()){
             case R.id.action_new_game:
                 //TODO confirmation followed by data wipe
+                DialogFragment newFragment = new NewGameAlertFragment();
+                newFragment.show(getSupportFragmentManager(), "new_game_alert");
 
                 break;
 
@@ -269,4 +278,22 @@ public class GameWindow extends ActionBarActivity {
         }
         return side;
     }
+
+    @Override
+    public void onDialogPositiveClick() {
+        //behavior for action bar new game button
+        //TODO delete scoreboard data
+
+        //create empty list
+        DominoAdapter adapter;
+        hand = new Hand();
+        Domino[] data = hand.toArray();
+        adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
+        listView.setAdapter(adapter);
+
+        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        text.setText(Integer.toString(hand.getTotalPointsHand()));
+
+    }
+
 }
