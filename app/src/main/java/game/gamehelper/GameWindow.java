@@ -92,7 +92,6 @@ public class GameWindow extends ActionBarActivity {
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
 
-                        adapter.clear();
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
@@ -120,7 +119,6 @@ public class GameWindow extends ActionBarActivity {
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
-                        adapter.clear();
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
@@ -157,7 +155,6 @@ public class GameWindow extends ActionBarActivity {
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
-                        adapter.clear();
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, temp);
                         listView.setAdapter(adapter);
 
