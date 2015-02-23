@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -177,8 +178,9 @@ public class GameWindow extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_game_window, menu);
-        return true;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_game_window, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -186,14 +188,36 @@ public class GameWindow extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch (item.getItemId()){
+            case R.id.action_new_game:
+                //TODO confirmation followed by data wipe
 
-        return super.onOptionsItemSelected(item);
+                break;
+
+            case R.id.action_score_board:
+                //TODO display score board
+
+                break;
+
+            case R.id.action_end_round:
+                //TODO confirmation followed by write to scoreboard and wipe hand
+
+                break;
+
+
+            case R.id.action_camera:
+                //TODO camera call, overwrite hand
+
+                break;
+
+            default:
+                //TODO perform other
+
+                break;
+            }
+
+        return true;
     }
 
     //Load image for domino side value
