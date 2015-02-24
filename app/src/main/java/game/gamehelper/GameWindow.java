@@ -25,7 +25,8 @@ import game.gamehelper.javaFiles.Hand;
 
 public class GameWindow extends ActionBarActivity implements
         NewGameAlertFragment.NewGameAlertListener,
-        DrawFragment.DrawListener{
+        DrawFragment.DrawListener,
+        EndSelectFragment.EndListener{
 
     private Hand hand;
     private ListView listView;
@@ -93,6 +94,17 @@ public class GameWindow extends ActionBarActivity implements
         Button highestScore = (Button)findViewById(R.id.highestScoreButton);
         Button draw = (Button)findViewById(R.id.drawButton);
         Button undo = (Button)findViewById(R.id.undoButton);
+
+        //Train head image behavior
+        image.setOnClickListener(
+                new ImageView.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogFragment endSelect = new EndSelectFragment();
+                        endSelect.show(getSupportFragmentManager(), "Select_End");
+                    }
+                }
+        );
 
         //longest run click handler
         longestRun.setOnClickListener(
@@ -313,5 +325,13 @@ public class GameWindow extends ActionBarActivity implements
         //update point display
         text.setText(Integer.toString(hand.getTotalPointsHand()));
 
+    }
+
+    @Override
+    public void onClose(int var1) {
+        //From end piece select, replace largest double value in hand
+
+//        hand.setEndValue(var1);
+        image.setImageBitmap(getSide(var1));
     }
 }
