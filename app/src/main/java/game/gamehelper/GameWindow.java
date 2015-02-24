@@ -301,9 +301,17 @@ public class GameWindow extends ActionBarActivity implements
     }
 
     @Override
-    public void onClose(Bundle savedInstanceState) {
-        //From draw button, 2 integers should be included in
-        //bundle, add to hand
+    public void onClose(int var1, int var2) {
+        //From draw button, use 2 integers to add a domino to hand
+
+        //add domino to hand
+        hand.addDomino(new Domino(var1,var2));
+        adapter = new DominoAdapter(this, R.layout.hand_display_grid, hand.toArray());
+        listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        //update point display
+        text.setText(Integer.toString(hand.getTotalPointsHand()));
 
     }
 }

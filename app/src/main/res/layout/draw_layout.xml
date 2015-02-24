@@ -1,33 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="500dp" >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TESTING"
-        android:textSize="50dp"
-        android:id="@+id/textView3" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageViewBG"
-        android:layout_above="@+id/gridView"
+        android:text="Create Domino"
+        android:gravity="center_horizontal"
+        android:id="@+id/textView3"
+        android:textSize="25dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/textView3"
-        android:layout_toEndOf="@+id/textView3" />
-
-    <GridView android:id="@+id/gridView" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:numColumns="4"
-        android:layout_below="@+id/textView3" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/domSides"
-        android:layout_below="@+id/textView3" />
+        android:id="@+id/imageViewBG"
+        android:adjustViewBounds="true"
+        android:maxWidth="42dp"
+        android:maxHeight="42dp"
+        android:scaleType="fitCenter"
+        android:paddingTop="25dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/gridView" />
 
-    </RelativeLayout>
+    <GridView android:id="@+id/gridView" android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/textView3"
+        android:gravity="center"
+        android:verticalSpacing="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:id="@+id/domSides"
+        android:gravity="center"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/gridView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/imageViewBG" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/leftSide"
+        android:layout_below="@+id/gridView"
+        android:paddingTop="25dp"
+        android:scaleType="fitEnd"
+        android:gravity="center"
+        android:background="@null"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/space2"
+        android:layout_toLeftOf="@+id/space2" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rightSide"
+        android:paddingTop="25dp"
+        android:gravity="center"
+        android:scaleType="fitStart"
+        android:background="@null"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/imageViewBG"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/space2"
+        android:layout_toRightOf="@+id/space2" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/gridView"
+        android:id="@+id/space2"
+        android:visibility="invisible"/>
+
+</RelativeLayout>
