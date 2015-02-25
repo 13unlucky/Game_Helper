@@ -6,5 +6,10 @@
     <string name="pictureButton">Take Picture</string>
     <string name="CountButton">Count</string>
     <string name="showPicture">Show Picture</string>
-    showPicture
+    showPicture            <string name="title_activity_main_window">MainWindow</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_game_window">GameWindow</string>
+    <string name="title_activity_score_board">ScoreBoard</string>
+    <string name="remainingPoints">0</string>
+
 </resources>
