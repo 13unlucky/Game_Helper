@@ -8,18 +8,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import org.opencv.core.CvType;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +31,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -45,21 +43,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Mat canny;
     private Mat gray;
     private Mat hierarchy;
-    private Mat proc;
-    private int numCircles;
-
+    private Mat blur;
     private Mat rgba;
+
     private String CurrentPhotoPath;
+
     private Button pictureButton;
     private Button pictureButtonGray;
-    private Button pictureButtonCircle;
+    private Button pictureButtonBlur;
+    private Button pictureButtonCanny;
+    private Button pictureButtonProc;
     private Button countButton;
+
     private TextView countText;
     private ImageView picture;
 
     private Bitmap bitmapRgba;
     private Bitmap bitmapGray;
-    private Bitmap bitmapProc;
+    private Bitmap bitmapBlur;
+    private Bitmap bitmapCanny;
+
 
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -94,8 +97,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         pictureButton.setOnClickListener(this);
         pictureButtonGray = (Button) findViewById(R.id.showPictureGray);
         pictureButtonGray.setOnClickListener(this);
-        pictureButtonCircle = (Button) findViewById(R.id.showPictureCircle);
-        pictureButtonCircle.setOnClickListener(this);
+        pictureButtonProc = (Button) findViewById(R.id.showPictureProcessed);
+        pictureButtonProc.setOnClickListener(this);
+        pictureButtonBlur = (Button) findViewById(R.id.showPictureBlur);
+        pictureButtonBlur.setOnClickListener(this);
+        pictureButtonCanny = (Button) findViewById(R.id.showPictureCanny);
+        pictureButtonCanny.setOnClickListener(this);
     }
 
 
@@ -138,13 +145,30 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 countText.setText(CurrentPhotoPath);
                 break;
             case R.id.showPictureGray:
+                bitmapGray = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(gray, bitmapGray);
                 picture.setImageBitmap(bitmapGray);
                 countText.setText("Gray");
                 break;
-            case R.id.showPictureCircle:
+            case R.id.showPictureBlur:
+                bitmapBlur = Bitmap.createBitmap(blur.cols(), blur.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(blur, bitmapBlur);
+                picture.setImageBitmap(bitmapBlur);
+                countText.setText("Processed");
+                break;
+            case R.id.showPictureCanny:
+                bitmapCanny = Bitmap.createBitmap(canny.cols(), canny.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(canny, bitmapCanny);
+                picture.setImageBitmap(bitmapCanny);
+                countText.setText("Processed");
+                break;
+            case R.id.showPictureProcessed:
+                bitmapRgba = Bitmap.createBitmap(rgba.cols(), rgba.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(rgba, bitmapRgba);
                 picture.setImageBitmap(bitmapRgba);
                 countText.setText("Processed");
                 break;
+
         }
     }
 
@@ -220,43 +244,32 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         rgba = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         gray = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         canny = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
-        proc = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
+        blur = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         hierarchy = new Mat();
 
         Utils.bitmapToMat(myBitmap32,rgba,true);
 
-        Size sizeRgba = rgba.size();
-
-
-
-
-
-        int rows = (int) sizeRgba.height;
-        int cols = (int) sizeRgba.width;
-
-
-
-        Size GB = new Size(5,5);
 
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.blur(gray,gray,new Size(3,3));
-        Imgproc.Canny(gray, canny, 123, 250);
+        Imgproc.blur(gray, blur, new Size(3, 3), new Point(0, 0), 2);
+        Imgproc.Canny(blur, canny, 120, 250);
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
 
-        Imgproc.findContours(canny, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
+        Imgproc.findContours(canny, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
         Imgproc.drawContours(rgba, contours, - 1, new Scalar(255,0,0,255));
 
-        bitmapRgba = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(rgba, bitmapRgba);
-
-        bitmapGray = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(canny, bitmapGray);
 
 
-        return numCircles;
+
+
+
+
+
+
+        return 0;
     }
 
 
