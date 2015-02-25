@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="fill_parent"
+    android:layout_height="500dp" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Train Head"
+        android:gravity="center_horizontal"
+        android:id="@+id/textView3"
+        android:textSize="25dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/endValue"
+        android:adjustViewBounds="true"
+        android:maxWidth="42dp"
+        android:maxHeight="42dp"
+        android:scaleType="fitCenter"
+        android:paddingTop="25dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/gridView" />
+
+    <GridView android:id="@+id/gridView" android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/textView3"
+        android:gravity="center"
+        android:verticalSpacing="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:id="@+id/domSides"
+        android:gravity="center"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/gridView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/imageViewBG" />
+
+</RelativeLayout>
