@@ -4,13 +4,17 @@ package game.gamehelper;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
+import org.opencv.core.CvType;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -29,6 +33,8 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.android.Utils;
@@ -36,16 +42,25 @@ import org.opencv.android.Utils;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
-
+    private Mat canny;
     private Mat gray;
-    private Mat circles;
+    private Mat hierarchy;
+    private Mat proc;
     private int numCircles;
+
     private Mat rgba;
     private String CurrentPhotoPath;
     private Button pictureButton;
+    private Button pictureButtonGray;
+    private Button pictureButtonCircle;
     private Button countButton;
     private TextView countText;
     private ImageView picture;
+
+    private Bitmap bitmapRgba;
+    private Bitmap bitmapGray;
+    private Bitmap bitmapProc;
+
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -77,6 +92,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         picture = (ImageView) findViewById(R.id.imageView);
         pictureButton = (Button) findViewById(R.id.showPicture);
         pictureButton.setOnClickListener(this);
+        pictureButtonGray = (Button) findViewById(R.id.showPictureGray);
+        pictureButtonGray.setOnClickListener(this);
+        pictureButtonCircle = (Button) findViewById(R.id.showPictureCircle);
+        pictureButtonCircle.setOnClickListener(this);
     }
 
 
@@ -116,8 +135,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.showPicture:
                 Bitmap bitmap = BitmapFactory.decodeFile(CurrentPhotoPath);
                 picture.setImageBitmap(bitmap);
-                System.out.print(CurrentPhotoPath);
                 countText.setText(CurrentPhotoPath);
+                break;
+            case R.id.showPictureGray:
+                picture.setImageBitmap(bitmapGray);
+                countText.setText("Gray");
+                break;
+            case R.id.showPictureCircle:
+                picture.setImageBitmap(bitmapRgba);
+                countText.setText("Processed");
                 break;
         }
     }
@@ -165,7 +191,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         return image;
     }
 
-
     public boolean onTouch(View v, MotionEvent event) {
 
         return false;
@@ -177,15 +202,27 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
+    /*
+    @Override
+    public void onStop()
+    {
 
-
+        gray.release();
+        circles.release();
+    }
+    */
     public int countCircles(){
-        gray = new Mat();
-        circles = new Mat();
-        rgba = new Mat();
+
         File file = new File(CurrentPhotoPath);
         Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
         Bitmap myBitmap32 = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+        rgba = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
+        gray = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
+        canny = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
+        proc = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
+        hierarchy = new Mat();
+
         Utils.bitmapToMat(myBitmap32,rgba,true);
 
         Size sizeRgba = rgba.size();
@@ -199,32 +236,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
 
-        Size GB = new Size(9,9);
-
+        Size GB = new Size(5,5);
 
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.GaussianBlur( gray, gray, GB, 2, 2 );
+        Imgproc.blur(gray,gray,new Size(3,3));
+        Imgproc.Canny(gray, canny, 123, 250);
+
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
 
+        Imgproc.findContours(canny, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
 
-        Imgproc.HoughCircles( gray, circles,Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8 , 200, 100, 0, 0 );
-        /*
-        for (int x = 0; x < circles.cols(); x++)
-        {
-            double vCircle[]=circles.get(0,x);
+        Imgproc.drawContours(rgba, contours, - 1, new Scalar(255,0,0,255));
 
-            Point center=new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
-            int radius = (int)Math.round(vCircle[2]);
-            // draw the circle center
-            Core.circle(rgba, center, 3,new Scalar(0,255,0), -1, 8, 0 );
-            // draw the circle outline
-            Core.circle( rgba, center, radius, new Scalar(0,0,255), 3, 8, 0 );
+        bitmapRgba = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(rgba, bitmapRgba);
 
-        }
-        */
-        gray.release();
-        circles.release();
-        numCircles = circles.cols();
+        bitmapGray = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(canny, bitmapGray);
+
+
         return numCircles;
     }
 
