@@ -224,7 +224,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public void onResume()
     {
         super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+        try {
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     /*
     @Override

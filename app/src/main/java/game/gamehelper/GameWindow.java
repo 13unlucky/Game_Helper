@@ -70,7 +70,7 @@ public class GameWindow extends ActionBarActivity implements
             }
             else
             {
-                hand = new Hand();
+                hand = new Hand(bundle.getInt("maxDouble"));
                 data = hand.toArray();
                 text.setText(Integer.toString(hand.getTotalPointsHand()));
             }
@@ -130,6 +130,9 @@ public class GameWindow extends ActionBarActivity implements
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewLongestRun);
                         listView.setAdapter(adapter);
+
+                        //update point display
+                        text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
                     }
                 }
         );
@@ -157,6 +160,9 @@ public class GameWindow extends ActionBarActivity implements
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewMostPointRun);
                         listView.setAdapter(adapter);
+
+                        //update point display
+                        text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
                     }
                 }
         );
@@ -194,6 +200,9 @@ public class GameWindow extends ActionBarActivity implements
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, viewHand);
                         listView.setAdapter(adapter);
+
+                        //update point display
+                        text.setText(Integer.toString(hand.getTotalPointsHand()));
                     }
                 }
         );
@@ -302,7 +311,7 @@ public class GameWindow extends ActionBarActivity implements
 
         //create empty list
         DominoAdapter adapter;
-        hand = new Hand();
+        hand = new Hand(getIntent().getExtras().getInt("maxDouble"));
         Domino[] data = hand.toArray();
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
         listView.setAdapter(adapter);

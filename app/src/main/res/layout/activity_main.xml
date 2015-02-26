@@ -50,4 +50,42 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Picture Gray"
+        android:id="@+id/showPictureGray"
+        android:layout_below="@+id/countText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Picture Blur"
+        android:id="@+id/showPictureBlur"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Picture Canny"
+        android:id="@+id/showPictureCanny"
+        android:layout_below="@+id/showPictureBlur"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="37dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Picture Processed"
+        android:id="@+id/showPictureProcessed"
+        android:layout_below="@+id/showPictureCanny"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="34dp" />
+
 </RelativeLayout>

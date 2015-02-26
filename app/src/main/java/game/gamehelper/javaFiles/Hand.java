@@ -32,6 +32,7 @@ public class Hand {
 
     //Initializes the hand
     //Requires maximum double possible.
+    //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
     public Hand(int[][] tileList, int totalTiles, int largestDouble) {
         handAll = new ArrayList<Domino>();
         currentHand = new LinkedList<Domino>();
@@ -54,21 +55,26 @@ public class Hand {
         runs = new DominoGraph(this, LARGEST_DOUBLE);
     }
 
-    public Hand(){
+    //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
+    public Hand(int largestDouble){
         handAll = new ArrayList<Domino>();
         currentHand = new LinkedList<Domino>();
         totalDominos = 0;
-        LARGEST_DOUBLE = -1;
+        LARGEST_DOUBLE = largestDouble;
 
+        runs = new DominoGraph(this, LARGEST_DOUBLE);
     }
 
-    //Adds a domino to the hand, increases point value.
+    //Adds a domino to the hand, but only if it doesn't exist
     public void addDomino(Domino d) {
-        //if (d.getVal1() > LARGEST_DOUBLE || d.getVal2() > LARGEST_DOUBLE)
-        //    throw new AssertionError("Attempted to add double greater than stored maximum double.");
-
+        for (Domino a : handAll){
+            if (a.compareTo(d)) {
+                return;
+            }
+        }
         handAll.add(d);
         totalPointsHand = getTotalPointsHand() + d.getSum();
+        runs.addDomino(d);
     }
 
     //Removes a domino to hand if it exists.
@@ -76,6 +82,8 @@ public class Hand {
         for (Domino a : handAll){
             if (a.compareTo(d)) {
                 handAll.remove(a);
+                totalPointsHand = getTotalPointsHand() - d.getSum();
+                runs.removeDomino(a);
                 break;
             }
         }

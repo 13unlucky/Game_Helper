@@ -176,23 +176,13 @@ public class DominoGraph {
 
         //simple heuristic to remove copy runs. Still will need more processing by a ProcessRun class.
         //TODO copy this functionality to a more-functional ProcessRun class
-        if (mostPointRuns.size() > 1) {
-            for (DominoRun run : mostPointRuns) {
-                if (run.isLongerThan(mostPoints))
-                    mostPoints = run.deepCopy();
-            }
+        for (DominoRun run : mostPointRuns) {
+            if (run.isShorterThan(mostPoints))
+                mostPoints = run.deepCopy();
         }
-        else {
-            mostPoints = mostPointRuns.getFirst().deepCopy();
-        }
-        if (longestRuns.size() > 1) {
-            for (DominoRun run : mostPointRuns) {
-                if (run.hasMorePointsThan(longest))
-                    longest = run.deepCopy();
-            }
-        }
-        else {
-            longest = longestRuns.getFirst().deepCopy();
+        for (DominoRun run : longestRuns) {
+            if (run.hasMorePointsThan(longest))
+                longest = run.deepCopy();
         }
 
         System.out.println("last repeat lens found: " + repeatLensFound);
