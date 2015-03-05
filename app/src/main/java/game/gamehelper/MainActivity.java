@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -31,11 +32,17 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.android.Utils;
+
+import static org.opencv.imgproc.Imgproc.approxPolyDP;
+import static org.opencv.imgproc.Imgproc.arcLength;
+import static org.opencv.imgproc.Imgproc.contourArea;
+import static org.opencv.imgproc.Imgproc.isContourConvex;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
@@ -263,6 +270,29 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
         Imgproc.findContours(canny, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        //Sort circles and rectangles from junk
+        MatOfPoint2f aprox = new MatOfPoint2f();
+
+        MatOfPoint2f tempMOP2f = new MatOfPoint2f();
+        MatOfPoint2f approxMOP2F = new MatOfPoint2f();
+
+        for (int i = 0; i < contours.size(); i++) {
+
+            contours.get(i).convertTo(tempMOP2f, CvType.CV_32FC2);
+            approxPolyDP(tempMOP2f, approxMOP2F, (arcLength(tempMOP2f, true) * .02), true);
+
+            //check for samll and non-convex
+            if (Math.abs(contourArea(contours.get(i))) < 100 || !(isContourConvex(contours.get(i))))
+            {
+                continue;
+            }
+
+
+
+
+        }
+
 
         Imgproc.drawContours(rgba, contours, - 1, new Scalar(255,0,0,255));
 
