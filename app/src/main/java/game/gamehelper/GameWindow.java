@@ -15,8 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import game.gamehelper.javaFiles.Domino;
@@ -29,7 +29,7 @@ public class GameWindow extends ActionBarActivity implements
         EndSelectFragment.EndListener{
 
     private Hand hand;
-    private ListView listView;
+    private GridView listView;
     private ImageView image;
     private TextView text;
     private DominoAdapter adapter;
@@ -43,7 +43,8 @@ public class GameWindow extends ActionBarActivity implements
         Domino[] data = new Domino[0];
 
         text = (TextView)findViewById(R.id.remPoint);
-        listView = (ListView) findViewById(R.id.listView);
+        listView = (GridView) findViewById(R.id.gridViewMain);
+        listView.setNumColumns(getResources().getConfiguration().orientation);
         image = (ImageView) findViewById(R.id.imageView2);
 
         text.setClickable(false);

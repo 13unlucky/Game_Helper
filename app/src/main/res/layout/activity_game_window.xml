@@ -17,7 +17,7 @@
         android:id="@+id/space" />
 
     <!--Domino List-->
-    <ListView android:id="@+id/listView" android:layout_width="match_parent"
+    <GridView android:id="@+id/gridViewMain" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/space"
         android:layout_alignParentLeft="true"
@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView2"
-        android:layout_above="@+id/listView"
+        android:layout_above="@+id/gridViewMain"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignLeft="@+id/longestRunButton" />
@@ -72,8 +72,8 @@
         android:layout_alignParentRight="true"
         android:text="Longest Run"
         android:id="@+id/longestRunButton"
-        android:layout_toRightOf="@+id/listView"
-        android:layout_alignTop="@+id/listView" />
+        android:layout_toRightOf="@+id/gridViewMain"
+        android:layout_alignTop="@+id/gridViewMain" />
 
     <!--Highest score button-->
     <Button
@@ -83,7 +83,7 @@
         android:layout_alignParentRight="true"
         android:text="Highest Score"
         android:id="@+id/highestScoreButton"
-        android:layout_toRightOf="@+id/listView"
+        android:layout_toRightOf="@+id/gridViewMain"
         android:layout_below="@+id/longestRunButton" />
 
     <!--Draw button-->
@@ -94,7 +94,7 @@
         android:layout_alignParentRight="true"
         android:text="Draw"
         android:id="@+id/drawButton"
-        android:layout_toRightOf="@+id/listView"
+        android:layout_toRightOf="@+id/gridViewMain"
         android:layout_below="@+id/highestScoreButton"/>
 
     <!--Undo button-->
@@ -105,7 +105,7 @@
         android:layout_alignParentRight="true"
         android:text="Undo"
         android:id="@+id/undoButton"
-        android:layout_toRightOf="@+id/listView"
+        android:layout_toRightOf="@+id/gridViewMain"
         android:layout_below="@+id/drawButton"/>
 
 </RelativeLayout>
