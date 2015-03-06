@@ -13,6 +13,7 @@ import android.widget.ImageView;
 public class BitmapAdapter extends BaseAdapter {
     private Context context;
     private int[] imageIds;
+    private int imageSize = 200;
 
     public BitmapAdapter(Context c, int[] data) {
         context = c;
@@ -31,12 +32,16 @@ public class BitmapAdapter extends BaseAdapter {
         return 0;
     }
 
+    public void setImageSize(int size){
+        imageSize = size;
+    }
+
     public View getView(int position, View view, ViewGroup parent) {
         ImageView iview;
         if (view == null) {
             iview = new ImageView(context);
-            iview.setLayoutParams(new GridView.LayoutParams(200,200));
-            iview.setPadding(2, 2, 2, 2);
+            iview.setLayoutParams(new GridView.LayoutParams(imageSize,imageSize));
+            iview.setPadding(0, 0, 0, 0);
         } else {
             iview = (ImageView) view;
         }

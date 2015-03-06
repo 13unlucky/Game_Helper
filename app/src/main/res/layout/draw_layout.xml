@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:layout_width="fill_parent"
-    android:layout_height="500dp" >
+      android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
     <!--Title text-->
     <TextView
@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView3"
         android:gravity="center"
-        android:verticalSpacing="30dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"
         android:layout_alignBottom="@+id/space3" />
@@ -43,7 +42,7 @@
 
     <!--Domino left side-->
     <ImageView
-        android:layout_width="90dp"
+        android:layout_width="@dimen/drawPreviewHeight"
         android:layout_height="wrap_content"
         android:id="@+id/leftSide"
         android:layout_toLeftOf="@+id/space2"
@@ -52,7 +51,7 @@
 
     <!--Domino right side-->
     <ImageView
-        android:layout_width="90dp"
+        android:layout_width="@dimen/drawPreviewHeight"
         android:layout_height="wrap_content"
         android:id="@+id/rightSide"
         android:layout_toRightOf="@+id/space2"
@@ -75,6 +74,6 @@
         android:layout_height="match_parent"
         android:id="@+id/space3"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="100dp"/>
+        android:layout_marginBottom="@dimen/drawPreviewHeight"/>
 
 </RelativeLayout>

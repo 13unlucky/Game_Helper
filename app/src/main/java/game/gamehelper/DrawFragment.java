@@ -4,21 +4,22 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 /**
  * Created by Mark Andrews on 2/23/2015.
  * Fragment class for handling draw operations
+ *
+ * TODO make parent class to minimize duplicate code in DrawFragment and EndSelectFragment
  */
 public class DrawFragment extends DialogFragment {
 
@@ -26,15 +27,22 @@ public class DrawFragment extends DialogFragment {
         public void onClose(int var1, int var2);
     }
 
+    int bitmapSize = 250;
+    int deckMax = 12;
     DrawListener mListener;
     GridView gridView;
     View drawView;
     ImageView imageView;
     ImageView leftSide;
     ImageView rightSide;
+    BitmapAdapter bitmapAdapter;
+    int width = 0;
+    int height = 0;
     int var1 = 0;
     int var2 = 0;
     int currentSide = 0;
+    Display display;
+    Point size = new Point();
 
     @Override
     public void onAttach(Activity activity) {
@@ -47,6 +55,24 @@ public class DrawFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        int windowX;
+        int windowY;
+
+        if (getDialog() == null)
+            return;
+
+        display.getSize(size);
+        windowX = size.x - 50;
+        windowY = ( deckMax / (size.x / bitmapSize) ) * bitmapSize + 680;
+        //TODO get height of title, domino, and buttons dynamically and replace 680
+
+        getDialog().getWindow().setLayout(windowX,windowY);
+
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -55,6 +81,9 @@ public class DrawFragment extends DialogFragment {
 
         //retrieve draw_layout view
         drawView = View.inflate(getActivity(), R.layout.draw_layout, null);
+
+        display = getActivity().getWindowManager().getDefaultDisplay();
+        display.getSize(size);
 
         int[] mList = new int[] {
                 R.drawable.dom_one,
@@ -72,7 +101,6 @@ public class DrawFragment extends DialogFragment {
 
         };
 
-
         //get imageview from top left of layout and place the domino background
         imageView = (ImageView)drawView.findViewById(R.id.imageViewBG);
         imageView.setImageResource(R.drawable.dom_bg);
@@ -84,13 +112,13 @@ public class DrawFragment extends DialogFragment {
         leftSide.setOnClickListener(clickListener);
         rightSide.setOnClickListener(clickListener);
 
-//        leftSide.setImageResource(R.drawable.dom_four);
-//        rightSide.setImageResource(R.drawable.dom_eight);
-
         //retrieve gridview from layout, set adapter
         gridView = (GridView)drawView.findViewById(R.id.gridView);
-        gridView.setAdapter(new BitmapAdapter(getActivity(), mList));
-        gridView.setNumColumns(3);
+        bitmapAdapter = new BitmapAdapter(getActivity(), mList);
+        bitmapAdapter.setImageSize(bitmapSize);
+        gridView.setAdapter(bitmapAdapter);
+        gridView.setNumColumns(size.x / bitmapSize);
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -116,6 +144,7 @@ public class DrawFragment extends DialogFragment {
         //create alert dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(drawView);
+
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

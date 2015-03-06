@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -24,11 +26,35 @@ public class EndSelectFragment extends DialogFragment{
             public void onClose(int var1);
         }
 
+        int bitmapSize = 250;
+        int deckMax = 12;
         EndListener mListener;
         GridView gridView;
         View drawView;
         ImageView endValue;
         int var1 = 0;
+        Display display;
+        Point size = new Point();
+        BitmapAdapter bitmapAdapter;
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        int windowX;
+        int windowY;
+
+        if (getDialog() == null)
+            return;
+
+        display.getSize(size);
+        windowX = size.x - 50;
+        windowY = ( deckMax / (size.x / bitmapSize) ) * bitmapSize + 680;
+        //TODO get height of title, domino, and buttons dynamically and replace 680
+
+        getDialog().getWindow().setLayout(windowX,windowY);
+
+    }
 
         @Override
         public void onAttach(Activity activity) {
@@ -49,6 +75,9 @@ public class EndSelectFragment extends DialogFragment{
 
             //retrieve draw_layout view
             drawView = View.inflate(getActivity(), R.layout.end_select_layout, null);
+
+            display = getActivity().getWindowManager().getDefaultDisplay();
+            display.getSize(size);
 
             int[] mList = new int[] {
                     R.drawable.dom_one,
@@ -72,8 +101,10 @@ public class EndSelectFragment extends DialogFragment{
 
             //retrieve gridview from layout, set adapter
             gridView = (GridView)drawView.findViewById(R.id.gridView);
-            gridView.setAdapter(new BitmapAdapter(getActivity(), mList));
-            gridView.setNumColumns(3);
+            bitmapAdapter = new BitmapAdapter(getActivity(), mList);
+            bitmapAdapter.setImageSize(bitmapSize);
+            gridView.setAdapter(bitmapAdapter);
+            gridView.setNumColumns(size.x / bitmapSize);
 
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
