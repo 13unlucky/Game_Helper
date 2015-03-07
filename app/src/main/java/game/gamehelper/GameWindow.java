@@ -5,6 +5,7 @@
 
 package game.gamehelper;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.DialogFragment;
@@ -232,6 +233,8 @@ public class GameWindow extends ActionBarActivity implements
 
             case R.id.action_score_board:
                 //TODO display score board
+
+                startActivity(new Intent(GameWindow.this, ScoreBoard.class));
 
                 break;
 
