@@ -20,7 +20,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import game.gamehelper.javaFiles.Domino;
+import game.gamehelper.javaFiles.GameSet;
 import game.gamehelper.javaFiles.Hand;
 
 
@@ -34,6 +37,8 @@ public class GameWindow extends ActionBarActivity implements
     private ImageView image;
     private TextView text;
     private DominoAdapter adapter;
+    private Bundle scoreHistory = new Bundle();
+    private ArrayList<GameSet> setList = new ArrayList<GameSet>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,14 +237,17 @@ public class GameWindow extends ActionBarActivity implements
                 break;
 
             case R.id.action_score_board:
-                //TODO display score board
-
-                startActivity(new Intent(GameWindow.this, ScoreBoard.class));
+                //display score board
+                scoreHistory.clear();
+                scoreHistory.putSerializable("setList", setList);
+                startActivity(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory));
 
                 break;
 
             case R.id.action_end_round:
-                //TODO confirmation followed by write to scoreboard and wipe hand
+                //write to scoreboard and wipe hand
+                setList.add(new GameSet(hand));
+                newSet();
 
                 break;
 
@@ -308,10 +316,7 @@ public class GameWindow extends ActionBarActivity implements
         return side;
     }
 
-    @Override
-    public void onDialogPositiveClick() {
-        //behavior for action bar new game button
-        //TODO delete scoreboard data
+    public void newSet(){
 
         //create empty list
         DominoAdapter adapter;
@@ -322,6 +327,13 @@ public class GameWindow extends ActionBarActivity implements
 
         image.setImageBitmap(getSide(hand.getLargestDouble()));
         text.setText(Integer.toString(hand.getTotalPointsHand()));
+    }
+
+    @Override
+    public void onDialogPositiveClick() {
+        //behavior for action bar new game button
+        scoreHistory.clear();
+        newSet();
 
     }
 

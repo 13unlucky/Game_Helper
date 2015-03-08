@@ -17,14 +17,14 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import game.gamehelper.javaFiles.GameSet;
 
+/*Class for reading scores recorded from MainWindow and generating table
+ */
+
 public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment.FieldChangeListener {
-    //TODO read score data from gameWindow and replace dummy data
-    //TODO add click behavior
+    //TODO make click behavior work
 
     public static final int PLAYER_FIELD = 1;
     public static final int SET_FIELD = 2;
@@ -49,12 +49,12 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Bundle b = getIntent().getExtras();
         if(savedInstanceState == null && setList == null){
             //read setList
-            if(getIntent().getExtras() != null) {
-                setList = getIntent().getExtras().getParcelableArrayList("setList");
-            } else {
+            if(b != null) {
+                setList = b.getParcelableArrayList("setList");
+            } if( setList == null) {
                 setList = new ArrayList<GameSet>();
                 setList.add(new GameSet());
                 setList.get(0).addPlayer(0);
