@@ -12,4 +12,17 @@
     <string name="title_activity_score_board">ScoreBoard</string>
     <string name="remainingPoints">0</string>
 
+    <!--DialogFragments-->
+    <string name="newGameButton">Start a new game? \nAll data will be deleted</string>
+    <string name="newGame">New Game</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="done">Done</string>
+    <string name="nameChange">Enter new name</string>
+    <string name="dataChange">Change score</string>
+    <string name="setChange">Delete round?</string>
+
+    <!--ScoreBoard-->
+    <string name="total">Total</string>
+
 </resources>

@@ -119,7 +119,7 @@ public class EndSelectFragment extends DialogFragment{
             //create alert dialog
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(drawView);
-            builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //set head value of train
@@ -127,7 +127,7 @@ public class EndSelectFragment extends DialogFragment{
 
                 }
             })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //close window

@@ -24,7 +24,7 @@ public class NewGameAlertFragment extends DialogFragment {
     //handle button click
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Start a new game? \nAll data will be deleted")
+        builder.setMessage(R.string.newGameButton)
                 .setPositiveButton("New Game", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mListener.onDialogPositiveClick();
