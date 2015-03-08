@@ -8,13 +8,21 @@ import android.widget.Button;
 import android.view.View;
 import android.content.Intent;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+
+import game.gamehelper.javaFiles.GameSet;
 
 public class MainWindow extends ActionBarActivity {
     public static final int MAX_DOMINO_DISPLAY = 24;
     public int[][] tileList = new int[100][2];
+    ArrayList<GameSet> setList = new ArrayList<GameSet>();
     public int totalTiles = 0;
     public int maxDouble = 12;
+    public int player = 4;
+    public int set = 8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +36,7 @@ public class MainWindow extends ActionBarActivity {
         Button cameraButton = (Button)findViewById(R.id.cameraButton);
         Button exitButton = (Button)findViewById(R.id.exitButton);
         Button randomButton = (Button)findViewById(R.id.randomButton);
+        Button randomScoreBoardButton = (Button)findViewById(R.id.randomScoreBoard);
 
         final Bundle bundle = new Bundle();
 
@@ -53,6 +62,18 @@ public class MainWindow extends ActionBarActivity {
                         bundle.putInt("dominoTotal", totalTiles);
                         bundle.putInt("maxDouble", maxDouble);
                         startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
+                    }
+                }
+        );
+
+        randomScoreBoardButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    public void onClick(View v){
+                        randomScoreBoard(player, set);
+
+                        bundle.clear();
+                        bundle.putParcelableArrayList("setList", setList);
+                        startActivity(new Intent(MainWindow.this, ScoreBoard.class).putExtras(bundle));
                     }
                 }
         );
@@ -133,5 +154,19 @@ public class MainWindow extends ActionBarActivity {
 
             maxDouble = 12;
         }
+    }
+
+    //create random list of players and scores
+    public void randomScoreBoard(int player, int set){
+        Random generator = new Random();
+        setList.clear();
+
+        for(int i = 0 ; i < set ; i++ ){
+            GameSet setScores = new GameSet();
+            setList.add(setScores);
+            for(int j = 0 ; j < player ; j++)
+                setList.get(i).addPlayer(generator.nextInt(500));
+        }
+
     }
 }

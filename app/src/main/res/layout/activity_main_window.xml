@@ -31,8 +31,8 @@
         android:text="Camera"
         android:id="@+id/cameraButton"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/exitButton"
-        android:layout_toStartOf="@+id/exitButton" />
+        android:layout_toRightOf="@+id/randomButton"
+        android:layout_toEndOf="@+id/randomButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -48,7 +48,16 @@
         android:layout_height="wrap_content"
         android:text="Random Dominos"
         android:id="@+id/randomButton"
-        android:layout_alignTop="@+id/cameraButton"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Random ScoreBoard"
+        android:id="@+id/randomScoreBoard"
+        android:layout_alignBottom="@+id/cameraButton"
+        android:layout_toRightOf="@+id/cameraButton"
+        android:layout_toEndOf="@+id/cameraButton" />
 </RelativeLayout>
