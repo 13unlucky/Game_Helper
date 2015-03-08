@@ -25,7 +25,6 @@ public class Hand {
 
     private DominoGraph runs;
 
-    private int sumCurrentHand = 0;
     private int totalPointsHand = 0;
     private int totalDominos;
     private final int LARGEST_DOUBLE;
@@ -95,10 +94,6 @@ public class Hand {
 
     public DominoRun getMostPointRun() {
         return runs.getMostPointPath();
-    }
-
-    public int getSumCurrentHand() {
-        return sumCurrentHand;
     }
 
     public int getTotalPointsHand() {
