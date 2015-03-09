@@ -75,6 +75,6 @@
         android:layout_height="match_parent"
         android:id="@+id/space3"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="@dimen/drawPreviewHeight"/>
+        android:layout_marginBottom="@dimen/drawPanelHeight"/>
 
 </RelativeLayout>
