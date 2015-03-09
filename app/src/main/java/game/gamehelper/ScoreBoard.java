@@ -344,7 +344,7 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
                 }
 
                 setList.get(fieldX).changeScore(fieldY,score);
-                setListView.get(fieldX).get(fieldY).setText(s);
+                setListView.get(fieldY).get(fieldX).setText(s);
                 recalculateTotal(fieldX, fieldY);
                 break;
 
