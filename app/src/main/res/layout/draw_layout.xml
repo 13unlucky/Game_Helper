@@ -40,7 +40,6 @@
         android:layout_below="@+id/gridView"
         android:layout_alignParentBottom="true"/>
 
-    <!--TODO fix sides being slightly off center-->
     <!--Domino left side-->
     <ImageView
         android:layout_width="@dimen/drawPreviewHeight"
@@ -75,6 +74,6 @@
         android:layout_height="match_parent"
         android:id="@+id/space3"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="@dimen/drawPreviewHeight"/>
+        android:layout_marginBottom="@dimen/drawPanelHeight"/>
 
 </RelativeLayout>
