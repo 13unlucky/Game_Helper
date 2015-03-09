@@ -19,6 +19,7 @@ public class MainWindow extends ActionBarActivity {
     public static final int MAX_DOMINO_DISPLAY = 24;
     public int[][] tileList = new int[100][2];
     ArrayList<GameSet> setList = new ArrayList<GameSet>();
+    ArrayList<String> playerList = new ArrayList<String>();
     public int totalTiles = 0;
     public int maxDouble = 12;
     public int player = 4;
@@ -73,6 +74,7 @@ public class MainWindow extends ActionBarActivity {
 
                         bundle.clear();
                         bundle.putParcelableArrayList("setList", setList);
+                        bundle.putStringArrayList("playerList", playerList);
                         startActivity(new Intent(MainWindow.this, ScoreBoard.class).putExtras(bundle));
                     }
                 }
@@ -164,8 +166,12 @@ public class MainWindow extends ActionBarActivity {
         for(int i = 0 ; i < set ; i++ ){
             GameSet setScores = new GameSet();
             setList.add(setScores);
-            for(int j = 0 ; j < player ; j++)
+            for(int j = 0 ; j < player ; j++) {
                 setList.get(i).addPlayer(generator.nextInt(500));
+            }
+        }
+        for(int j = 0 ; j < player ; j++) {
+            playerList.add("Player " + j);
         }
 
     }

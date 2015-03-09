@@ -39,12 +39,18 @@ public class GameWindow extends ActionBarActivity implements
     private DominoAdapter adapter;
     private Bundle scoreHistory = new Bundle();
     private ArrayList<GameSet> setList = new ArrayList<GameSet>();
+    private ArrayList<String> playerList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_window);
         Bundle bundle = getIntent().getExtras();
+
+        if(playerList.size() == 0){
+            playerList.add("Player 1");
+        }
+
 
         Domino[] data = new Domino[0];
 
@@ -240,7 +246,9 @@ public class GameWindow extends ActionBarActivity implements
                 //display score board
                 scoreHistory.clear();
                 scoreHistory.putSerializable("setList", setList);
-                startActivity(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory));
+                scoreHistory.putStringArrayList("playerList", playerList);
+                startActivityForResult(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory),0);
+//                startActivity(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory));
 
                 break;
 
@@ -358,5 +366,19 @@ public class GameWindow extends ActionBarActivity implements
 
 //        hand.setEndValue(var1);
         image.setImageBitmap(getSide(var1));
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == 0 ){
+            if(resultCode == RESULT_OK){
+                Bundle b = data.getExtras();
+                if(b != null){
+                    setList.clear();
+                    setList = b.getParcelableArrayList("setList");
+                    playerList.clear();
+                    playerList = b.getStringArrayList("playerList");
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package game.gamehelper;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +18,7 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import game.gamehelper.javaFiles.GameSet;
 
@@ -24,7 +26,6 @@ import game.gamehelper.javaFiles.GameSet;
  */
 
 public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment.FieldChangeListener {
-    //TODO make click behavior work
 
     public static final int PLAYER_FIELD = 1;
     public static final int SET_FIELD = 2;
@@ -45,31 +46,32 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
     private int fixedHeaderHeight = 60;
     private ArrayList<GameSet> setList;
     private ArrayList<String> playerList;
+    private LinkedList<LinkedList<TextView>> setListView = new LinkedList<LinkedList<TextView>>();
+    private LinkedList<TextView> playerListView;
+    private LinkedList<TextView> setLabelListView;
+    private LinkedList<TextView> totalListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle b = getIntent().getExtras();
-        if(savedInstanceState == null && setList == null){
-            //read setList
-            if(b != null) {
-                setList = b.getParcelableArrayList("setList");
-            } if( setList == null) {
-                setList = new ArrayList<GameSet>();
-                setList.add(new GameSet());
-                setList.get(0).addPlayer(0);
-            }
-            playerList = new ArrayList<String>();
 
-            for(int i = 0 ; i < setList.get(0).getSize() ; i++ ){
-                playerList.add("Player " + i);
-            }
-        } else {
-            setList = savedInstanceState.getParcelableArrayList("setList");
-            playerList = (ArrayList<String>) savedInstanceState.getSerializable("playerList");
+        //read lists from MainWindow
+        if (b != null) {
+            setList = b.getParcelableArrayList("setList");
+            playerList = b.getStringArrayList("playerList");
         }
-        setContentView(R.layout.activity_score_board);
 
+        //create lists if empty
+        if (setList == null) {
+            setList = new ArrayList<GameSet>();
+            setList.add(new GameSet());
+            setList.get(0).addPlayer(0);
+            playerList = new ArrayList<String>();
+            playerList.add("Player 1");
+        }
+
+        setContentView(R.layout.activity_score_board);
         TableRow.LayoutParams tableParams = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         //blank space (fixed top left)
@@ -87,11 +89,12 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
         row.setGravity(Gravity.CENTER);
         row.setBackgroundColor(Color.YELLOW);
 
-//        for(int i = 0 ; i < totalColumns ; i++ )
-//            row.addView(makeTableRowWithText("Round " + i, rowWidthPercent, fixedHeaderHeight, SET_FIELD, 0, i));
-
-        for(int i = 1 ; i <= setList.size() ; i++ )
-            row.addView(makeTableRowWithText("Round " + i, rowWidthPercent, fixedHeaderHeight, SET_FIELD, 0, i));
+        setLabelListView = new LinkedList<TextView>();
+        for(int i = 1 ; i <= setList.size() ; i++ ) {
+            TextView set = makeTableRowWithText("Round " + i, rowWidthPercent, fixedHeaderHeight, SET_FIELD, 0, i);
+            setLabelListView.add(set);
+            row.addView(set);
+        }
 
         header.addView(row);
 
@@ -113,10 +116,15 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
         //score data fields (within scroll view)
         TableLayout scrollableData = (TableLayout) findViewById(R.id.scrollable_data);
 
+        //create linked lists for player and total columns
+        playerListView = new LinkedList<TextView>();
+        totalListView = new LinkedList<TextView>();
+
         for (int i = 0; i < playerList.size() ; i++) {
             //player name field
             TextView fixedView = makeTableRowWithText(playerList.get(i), rowWidthPercent, fixedRowHeight, PLAYER_FIELD, 0, i);
             fixedView.setBackgroundColor(Color.BLUE);
+            playerListView.add(fixedView);
             fixedColumn.addView(fixedView);
 
             //score data field
@@ -125,14 +133,21 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
             row.setGravity(Gravity.CENTER);
             row.setBackgroundColor(Color.WHITE);
 
+            //fill column with scores
+            LinkedList<TextView> dataColumn = new LinkedList<TextView>();
             for(int j = 0 ; j < setList.size() ; j++) {
-                row.addView(makeTableRowWithText("" + setList.get(j).getScore(i), rowWidthPercent, fixedRowHeight, DATA_FIELD, j, i));
+                TextView data = makeTableRowWithText("" + setList.get(j).getScore(i), rowWidthPercent, fixedRowHeight, DATA_FIELD, j, i);
+                dataColumn.add(data);
+                row.addView(data);
             }
+
+            setListView.add(dataColumn);
             scrollableData.addView(row);
 
             //total value field
             TextView fixedViewT = makeTableRowWithText( "" + getPlayerTotal(i), rowWidthPercent, fixedRowHeight, TOTAL_FIELD, -1, i);
             fixedViewT.setBackgroundColor(Color.WHITE);
+            totalListView.add(fixedViewT);
             totalColumn.addView(fixedViewT);
 
         }
@@ -193,7 +208,6 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
                         newFragment.setArguments(b);
                         newFragment.show(getSupportFragmentManager(), "fieldChange");
 
-
                         return true;
 
                     case TOTAL_FIELD:
@@ -244,17 +258,24 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
         return total;
     }
 
+    private void recalculateTotal(int x, int y) {
+        totalListView.get(y).setText("" + getPlayerTotal(y));
+    }
+
     @Override
     public void onDialogPositiveClick(String s, int fieldType) {
         int score = 0;
 
         switch(fieldType){
             case PLAYER_FIELD:
+                //change name in listarray and textview object
                 playerList.remove(fieldY);
                 playerList.add(fieldY, s);
+                playerListView.get(fieldY).setText(s);
                 break;
 
             case DATA_FIELD:
+                //change score in listarray and textview object if valid
                 try{
                     score = Integer.parseInt(s);
                 } catch (NumberFormatException e){
@@ -263,18 +284,26 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
                 }
 
                 setList.get(fieldX).changeScore(fieldY,score);
+                setListView.get(fieldX).get(fieldY).setText(s);
+                recalculateTotal(fieldX, fieldY);
                 break;
 
             default:
                 //do nothing
                 Log.w("ScoreBoard", "unknown field returned from FieldChangeFragment");
                 Log.w("ScoreBoard", "see ScoreBoard method onDialogPositiveClick");
-                break;
+                return;
 
         }
 
-//        finish();
-//        startActivity(getIntent());
+        //create bundle with changes to return to MainWindow
+        Bundle b = new Bundle();
+        Intent intent = getIntent();
+
+        b.putParcelableArrayList("setList", setList);
+        b.putStringArrayList("playerList", playerList);
+        intent.putExtras(b);
+        setResult(RESULT_OK, intent);
     }
 
     @Override
