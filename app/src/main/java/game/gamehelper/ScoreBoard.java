@@ -32,9 +32,16 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
     public static final int DATA_FIELD = 3;
     public static final int TOTAL_FIELD = 4;
 
+    public static final int MODE_NORMAL = 0;
+    public static final int MODE_ADD = 1;
+    public static final int MODE_REMOVE = 2;
+    public static final int MODE_EDIT = 3;
+
     private TextView selectedField;
     private int fieldX;
     private int fieldY;
+    private int mode = 0;
+    private Menu menu;
 
     private HorizontalScrollView scrollHeader;
     private HorizontalScrollView scrollData;
@@ -232,25 +239,76 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_score_board, menu);
+        this.menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //TODO add button behavior
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()){
+            //change icon state and icons
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.action_add:
+                if (mode != MODE_ADD) {
+                    mode = MODE_ADD;
+                    resetIconState();
+                    menu.getItem(MODE_ADD).setIcon(R.drawable.ic_action_add_active);
+                } else {
+                    mode = MODE_NORMAL;
+                    resetIconState();
+                }
+                break;
+
+            case R.id.action_remove:
+                if (mode != MODE_REMOVE) {
+                    mode = MODE_REMOVE;
+                    resetIconState();
+                    menu.getItem(MODE_REMOVE).setIcon(R.drawable.ic_action_remove_active);
+                } else {
+                    mode = MODE_NORMAL;
+                    resetIconState();
+                }
+                break;
+
+            case R.id.action_edit:
+                if (mode != MODE_EDIT) {
+                    mode = MODE_EDIT;
+                    resetIconState();
+                    menu.getItem(MODE_EDIT).setIcon(R.drawable.ic_action_edit_active);
+                } else {
+                    mode = MODE_NORMAL;
+                    resetIconState();
+                }
+                break;
+
+            case R.id.action_back:
+                finish();
+                break;
+
+            default:
+                Log.w("ScoreBoard", "Unknown actionbar icon clicked");
+                break;
+
+
+
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void resetIconState(){
+        //set action bar icons to default state
+        menu.getItem(MODE_ADD).setIcon(R.drawable.ic_action_add);
+        menu.getItem(MODE_REMOVE).setIcon(R.drawable.ic_action_remove);
+        menu.getItem(MODE_EDIT).setIcon(R.drawable.ic_action_edit);
+    }
+
     public int getPlayerTotal(int location){
+        //calculate total points for a row
         int total = 0;
         for(GameSet a : setList){
             total += a.getScore(location);
@@ -259,8 +317,10 @@ public class ScoreBoard extends ActionBarActivity implements FieldChangeFragment
     }
 
     private void recalculateTotal(int x, int y) {
+        //recalculate total column after data change
         totalListView.get(y).setText("" + getPlayerTotal(y));
     }
+
 
     @Override
     public void onDialogPositiveClick(String s, int fieldType) {
