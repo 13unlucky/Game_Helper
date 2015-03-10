@@ -28,7 +28,7 @@ import game.gamehelper.javaFiles.Hand;
 
 
 public class GameWindow extends ActionBarActivity implements
-        NewGameAlertFragment.NewGameAlertListener,
+        ConfirmationFragment.ConfirmationListener,
         DrawFragment.DrawListener,
         EndSelectFragment.EndListener{
 
@@ -237,8 +237,8 @@ public class GameWindow extends ActionBarActivity implements
 
         switch (item.getItemId()){
             case R.id.action_new_game:
-                DialogFragment newFragment = new NewGameAlertFragment();
-                newFragment.show(getSupportFragmentManager(), "new_game_alert");
+                DialogFragment newFragment = new ConfirmationFragment();
+                newFragment.show(getSupportFragmentManager(), getString(R.string.newGame));
 
                 break;
 
@@ -254,8 +254,8 @@ public class GameWindow extends ActionBarActivity implements
 
             case R.id.action_end_round:
                 //write to scoreboard and wipe hand
-                setList.add(new GameSet(hand));
-                newSet();
+                DialogFragment fragment = new ConfirmationFragment();
+                fragment.show(getSupportFragmentManager(), getString(R.string.endSet));
 
                 break;
 
@@ -338,10 +338,19 @@ public class GameWindow extends ActionBarActivity implements
     }
 
     @Override
-    public void onDialogPositiveClick() {
-        //behavior for action bar new game button
-        scoreHistory.clear();
-        newSet();
+    public void onDialogPositiveClick(String tag) {
+        //behavior for confirmation fragment (new game/ end set)
+
+        if(tag.compareTo(getString(R.string.newGame)) == 0){
+            //clear data and start new set
+            scoreHistory.clear();
+            newSet();
+        }
+        else if(tag.compareTo(getString(R.string.endSet)) == 0){
+            //add to scoreboard and start new set
+            setList.add(new GameSet(hand));
+            newSet();
+        }
 
     }
 
