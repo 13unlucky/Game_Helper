@@ -12,12 +12,27 @@
     <string name="title_activity_score_board">ScoreBoard</string>
     <string name="remainingPoints">0</string>
 
-    <!--DialogFragments-->
-    <string name="newGameButton">Start a new game? \nAll data will be deleted</string>
+    <!--DialogFragmentsNames-->
     <string name="newGame">New Game</string>
+    <string name="endSet">Set End</string>
+    <string name="deleteRow">Row Delete</string>
+    <string name="deleteColumn">Column Delete</string>
+    <string name="addRow">Add Row</string>
+    <string name="addColumn">Add Column</string>
+    <string name="editField">Edit Field</string>
+    <string name="endSelect">End Select</string>
+    <string name="draw">Draw</string>
+
+    <!--DialogFragmentStrings-->
+    <string name="newGameText">Start a new game? \nAll data will be deleted</string>
+    <string name="endSetText">Add points to score board\nand start a new set?</string>
+    <string name="deleteRowText">Remove this player?</string>
+    <string name="deleteColumnText">Remove this round?</string>
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
+    <string name="yes">Yes</string>
     <string name="done">Done</string>
+    <string name="remove">Remove</string>
     <string name="nameChange">Enter new name</string>
     <string name="dataChange">Change score</string>
     <string name="setChange">Delete round?</string>
