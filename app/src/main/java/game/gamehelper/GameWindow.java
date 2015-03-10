@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ public class GameWindow extends ActionBarActivity implements
     private Bundle scoreHistory = new Bundle();
     private ArrayList<GameSet> setList = new ArrayList<GameSet>();
     private ArrayList<String> playerList = new ArrayList<String>();
+    Domino[] data = new Domino[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,6 @@ public class GameWindow extends ActionBarActivity implements
             playerList.add("Player 1");
         }
 
-
-        Domino[] data = new Domino[0];
-
         text = (TextView)findViewById(R.id.remPoint);
         listView = (GridView) findViewById(R.id.gridViewMain);
         listView.setNumColumns(getResources().getConfiguration().orientation);
@@ -64,22 +63,7 @@ public class GameWindow extends ActionBarActivity implements
         //use data passed from main window or camera to create a hand
         if(bundle != null) {
             if (bundle.getInt("dominoTotal") != 0) {
-                hand = new Hand((int[][]) bundle.getSerializable("dominoList"),
-                        bundle.getInt("dominoTotal"), bundle.getInt("maxDouble"));
-
-                //create domino array for adapter, set text and image to corresponding values
-                Domino temp[] = hand.toArray();
-
-                data = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
-
-                //generate bitmaps for hand
-                //ONLY for the first 10 dominoes.
-                for (int i = 0; i < data.length; i++) {
-                    data[i] = temp[i];
-                }
-
-                image.setImageBitmap(getSide(hand.getLargestDouble()));
-                text.setText(Integer.toString(hand.getTotalPointsHand()));
+                createHand(bundle);
             }
             else
             {
@@ -99,6 +83,27 @@ public class GameWindow extends ActionBarActivity implements
 //        listView.setAdapter(adapter);
 
         addButtonBehavior();
+    }
+
+    public void createHand(Bundle bundle){
+
+        hand = new Hand((int[][]) bundle.getSerializable("dominoList"),
+                bundle.getInt("dominoTotal"), bundle.getInt("maxDouble"));
+
+        //create domino array for adapter, set text and image to corresponding values
+        Domino temp[] = hand.toArray();
+
+        data = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
+
+        //generate bitmaps for hand
+        //ONLY for the first 10 dominoes.
+        for (int i = 0; i < data.length; i++) {
+            data[i] = temp[i];
+        }
+
+        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        text.setText(Integer.toString(hand.getTotalPointsHand()));
+
     }
 
     public void addButtonBehavior(){
@@ -261,7 +266,8 @@ public class GameWindow extends ActionBarActivity implements
 
 
             case R.id.action_camera:
-                //TODO camera call, overwrite hand
+                //camera call, overwrite hand
+                startActivityForResult(new Intent(GameWindow.this, MainActivity.class),0);
 
                 break;
 
@@ -385,16 +391,42 @@ public class GameWindow extends ActionBarActivity implements
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if( requestCode == 0 ){
-            if(resultCode == RESULT_OK){
-                Bundle b = data.getExtras();
+        Bundle b;
+
+        if( resultCode != RESULT_OK )
+            return;
+        switch( requestCode) {
+            case 0:
+                //data returned from scoreboard
+                b = data.getExtras();
+
                 if(b != null){
                     setList.clear();
                     setList = b.getParcelableArrayList("setList");
                     playerList.clear();
                     playerList = b.getStringArrayList("playerList");
                 }
-            }
-        }
+                return;
+
+            case 1:
+                //Data from camera
+                b = data.getExtras();
+
+                if(b != null){
+                    newSet();
+                    createHand(b);
+
+                    //set ListView adapter to display list of dominos
+                    adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);
+                    listView.setAdapter(adapter);
+                    return;
+                }
+
+                Log.w("MainWindow", "No camera data found");
+                return;
+
+            default:
+                //other
+                return;      }
     }
 }
