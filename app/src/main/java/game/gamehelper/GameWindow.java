@@ -344,11 +344,18 @@ public class GameWindow extends ActionBarActivity implements
         if(tag.compareTo(getString(R.string.newGame)) == 0){
             //clear data and start new set
             scoreHistory.clear();
+            setList.clear();
+            playerList.clear();
             newSet();
         }
         else if(tag.compareTo(getString(R.string.endSet)) == 0){
-            //add to scoreboard and start new set
-            setList.add(new GameSet(hand));
+            //create gameset from hand and add to scoreboard
+            GameSet newSet = new GameSet(hand);
+
+            //add rows for all current players
+            for (int i = 1 ; i < playerList.size() ; i++)
+                newSet.addPlayer();
+            setList.add(newSet);
             newSet();
         }
 

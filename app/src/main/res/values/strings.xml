@@ -26,8 +26,10 @@
     <!--DialogFragmentStrings-->
     <string name="newGameText">Start a new game? \nAll data will be deleted</string>
     <string name="endSetText">Add points to score board\nand start a new set?</string>
-    <string name="deleteRowText">Remove this player?</string>
-    <string name="deleteColumnText">Remove this round?</string>
+    <string name="deleteRowText">Remove player:</string>
+    <string name="deleteColumnText">Remove set:</string>
+    <string name="addRowText">Create new player?</string>
+    <string name="addColumnText">Create new set?</string>
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
     <string name="yes">Yes</string>
@@ -39,5 +41,6 @@
 
     <!--ScoreBoard-->
     <string name="total">Total</string>
+    <string name="set">Set</string>
 
 </resources>

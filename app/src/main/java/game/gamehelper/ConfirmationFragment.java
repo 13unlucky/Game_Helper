@@ -24,6 +24,12 @@ public class ConfirmationFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     //handle button click
         String tag = this.getTag();
+        Bundle b = getArguments();
+        String argument= "";
+
+        //create additional text for delete dialogs
+        if(b != null)
+            argument = " " + b.getString("field") + "?";
 
         //get text for dialog type
         if(tag.compareTo(getString(R.string.newGame)) == 0){
@@ -50,9 +56,16 @@ public class ConfirmationFragment extends DialogFragment {
             dialogText[2] = getString(R.string.deleteColumnText);
             dialogText[3] = getString(R.string.deleteColumn);
         }
+        else if(tag.compareTo(getString(R.string.addColumn)) == 0){
+            dialogText[0] = getString(R.string.add);
+            dialogText[1] = getString(R.string.cancel);
+            dialogText[2] = getString(R.string.addColumnText);
+            dialogText[3] = getString(R.string.addColumn);
+            argument = "";
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(dialogText[2])
+        builder.setMessage(dialogText[2] + argument)
                 .setPositiveButton(dialogText[0], new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //return dialog name on positive click

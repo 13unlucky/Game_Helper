@@ -70,9 +70,11 @@ public class MainWindow extends ActionBarActivity {
         randomScoreBoardButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
-                        randomScoreBoard(player, set);
-
+                        setList.clear();
+                        playerList.clear();
                         bundle.clear();
+
+                        randomScoreBoard(player, set);
                         bundle.putParcelableArrayList("setList", setList);
                         bundle.putStringArrayList("playerList", playerList);
                         startActivity(new Intent(MainWindow.this, ScoreBoard.class).putExtras(bundle));
