@@ -17,7 +17,7 @@ import game.gamehelper.javaFiles.Domino;
  * Created by Mark Andrews on 2/14/2015.
  * Adapter for image lists
  */
-public class DominoAdapter extends ArrayAdapter {
+public class DominoAdapter extends ArrayAdapter<Domino> {
 
     private Context context;
     private Domino[] data;

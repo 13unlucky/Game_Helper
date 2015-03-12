@@ -23,9 +23,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignRight="@+id/space" />
 
-    <ImageView android:id="@+id/domList" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:gravity="center" />
-
     <!--Points Remaining-->
     <TextView
         android:layout_width="wrap_content"
