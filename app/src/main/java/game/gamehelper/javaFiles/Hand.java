@@ -1,8 +1,9 @@
 package game.gamehelper.javaFiles;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Stack;
+
+import game.gamehelper.GameWindow;
 /**
  * Author History
  * Jacob
@@ -17,24 +18,26 @@ import java.util.Stack;
  */
 
 public class Hand {
-    private ArrayList<Domino> handAll;
-    private LinkedList<Domino> currentHand;
+    private ArrayList<Domino> dominoHandHistory;
+    private ArrayList<Domino> currentHand;
 
     private RunController runs;
 
     private int totalPointsHand = 0;
     private int totalDominos;
-    private int largestDouble;
+    private final int MAXIMUM_DOUBLE;
+    private int trainHead;
     private Stack<Domino> playHistory = new Stack<>();
     private Stack<Integer> trainHeadHistory = new Stack<>();
     private Stack<Integer> positionPlayedHistory = new Stack<>();
+
 
     //Initializes the hand
     //Requires maximum double possible.
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
     public Hand(int[][] tileList, int totalTiles, int largestDouble) {
-        handAll = new ArrayList<Domino>();
-        currentHand = new LinkedList<Domino>();
+        dominoHandHistory = new ArrayList<Domino>();
+        currentHand = new ArrayList<Domino>();
         totalDominos = totalTiles;
 
         //create list of tiles
@@ -42,45 +45,48 @@ public class Hand {
             if (totalDominos-- <= 0)
                 break;
 
-            handAll.add(new Domino(i[0], i[1]));
+            dominoHandHistory.add(new Domino(i[0], i[1]));
             currentHand.add(new Domino(i[0], i[1]));
             totalPointsHand += i[0] + i[1];
         }
 
         totalDominos = totalTiles;
 
-        this.largestDouble = largestDouble;
+        MAXIMUM_DOUBLE = largestDouble;
+        trainHead = MAXIMUM_DOUBLE;
 
-        runs = new RunController(this, this.largestDouble);
+        runs = new RunController(this, MAXIMUM_DOUBLE);
     }
 
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
-    public Hand(int largestDouble){
-        handAll = new ArrayList<Domino>();
-        currentHand = new LinkedList<Domino>();
+    public Hand(int largestDouble) {
+        dominoHandHistory = new ArrayList<Domino>();
+        currentHand = new ArrayList<Domino>();
         totalDominos = 0;
-        this.largestDouble = largestDouble;
+        MAXIMUM_DOUBLE = largestDouble;
+        trainHead = MAXIMUM_DOUBLE;
 
-        runs = new RunController(this, this.largestDouble);
+        runs = new RunController(this, MAXIMUM_DOUBLE);
     }
 
     //Adds a domino to the hand, but only if it doesn't exist
     public void addDomino(Domino d) {
-        for (Domino a : handAll){
+        for (Domino a : currentHand){
             if (a.compareTo(d)) {
                 return;
             }
         }
-        handAll.add(d);
+        dominoHandHistory.add(d);
+        currentHand.add(d);
         totalPointsHand = getTotalPointsHand() + d.getSum();
         runs.addDomino(d);
     }
 
     //Removes a domino to hand if it exists.
     public void removeDomino(Domino d) {
-        for (Domino a : handAll){
+        for (Domino a : currentHand) {
             if (a.compareTo(d)) {
-                handAll.remove(a);
+                currentHand.remove(a);
                 totalPointsHand = getTotalPointsHand() - d.getSum();
                 runs.removeDomino(a);
                 break;
@@ -88,22 +94,61 @@ public class Hand {
         }
     }
 
-    public void dominoPlayed(int position) {
-        trainHeadHistory.push(largestDouble);
-        playHistory.push(handAll.get(position));
+    /**
+     * Plays a domino based on its position in the arraylist.
+     * @param position The play position; what order we made the play in.
+     * @param playContext The context in which the play was made.
+     */
+    public void dominoPlayed(int position, GameWindow.WindowContext playContext) {
+        //We find the "real" position, and change position to match it so we can delete it below.
+
+        //find the longest path position.
+        if (playContext == GameWindow.WindowContext.SHOWING_LONGEST) {
+            // Converts the longest run to an array and indexes the position.
+            Domino d = getLongestRun().toArray()[position];
+            //finds the domino in the current hand, and sets the correct position.
+            position = currentHand.indexOf(d);
+        }
+        //find the most points path position.
+        else if (playContext == GameWindow.WindowContext.SHOWING_MOST_POINTS) {
+            // Converts the most points run to an array and indexes the position.
+            Domino d = getMostPointRun().toArray()[position];
+            //finds the domino in the current hand, and sets the correct position.
+            position = currentHand.indexOf(d);
+        }
+        //the position given is actually the correct position.
+        else {
+            //position = position;
+        }
+
+        //find the domino to remove, and get it from the current hand.
+        Domino toRemove = currentHand.get(position);
+
+        //add to our undo stacks.
+        playHistory.push(toRemove);
         positionPlayedHistory.push(position);
+        trainHeadHistory.push(trainHead);
 
-        //replace largestDouble with the new train head and remove domino
-        largestDouble = largestDouble == (handAll.get(position).getVal1()) ?
-                handAll.get(position).getVal2() : handAll.get(position).getVal1();
+        //we removed the train head, adjust the train head accordingly.
+        if (toRemove.getVal1() == trainHead) {
+            trainHead = toRemove.getVal2();
+        }
+        else if (toRemove.getVal2() == trainHead) {
+            trainHead = toRemove.getVal1();
+        }
 
-        runs.removeDomino(handAll.get(position));
-        handAll.remove(position);
-        totalPointsHand = getTotalPointsHand() - playHistory.peek().getSum();
+        //removes the domino & its information from the hand.
+        runs.removeDomino(toRemove);
+        currentHand.remove(toRemove);
+        totalPointsHand = getTotalPointsHand() - toRemove.getSum();
     }
 
-    public void undo(){
-        if(playHistory.size() == 0)
+    /**
+     * Undoes a previous play. Re-sets the train head to the old one, and
+     * adds the domino back in its old play position.
+     */
+    public void undo() {
+        if (playHistory.size() == 0)
             return;
 
         Domino lastDomino;
@@ -111,32 +156,63 @@ public class Hand {
 
         //retrieve last move
         position = positionPlayedHistory.pop();
-        largestDouble = trainHeadHistory.pop();
+        trainHead = trainHeadHistory.pop();
         lastDomino = playHistory.pop();
 
         //add information back to hand
-        handAll.add(position, lastDomino);
-        runs.addDomino(lastDomino);
+        currentHand.add(position, lastDomino);
+        runs.reAddDomino(lastDomino, trainHead);
+        totalPointsHand += lastDomino.getSum();
     }
 
+    /**
+     * Gets the longest run from our RunController.
+     * @return Returns the longest run.
+     */
     public DominoRun getLongestRun() {
         return runs.getLongestPath();
     }
 
+    /**
+     * Gets the most points run from our RunController.
+     * @return Returns the most points run.
+     */
     public DominoRun getMostPointRun() {
         return runs.getMostPointPath();
     }
 
+    /**
+     * Gets the total points of the current hand.
+     * @return Returns the total points of the current hand.
+     */
     public int getTotalPointsHand() {
         return totalPointsHand;
     }
 
+    /**
+     * Converts the current hand to a domino array.
+     * @return Returns the converted current hand to a domino array.
+     */
     public Domino[] toArray() {
-        return handAll.toArray(new Domino[handAll.size()]);
+        return currentHand.toArray(new Domino[currentHand.size()]);
     }
 
-    public int getLargestDouble(){
-        return largestDouble;
+    /**
+     * Gets the maximum double value, which all dominoes with that value must be played on.
+     * @return Returns maximum double (the start domino)
+     */
+    public int getMaxDouble(){
+        return MAXIMUM_DOUBLE;
     }
+
+    /**
+     * Gets the current train head.
+     * @return Returns the current train head.
+     */
+    public int getTrainHead() {
+        return trainHead;
+    }
+
+
 
 }
