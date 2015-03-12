@@ -70,5 +70,28 @@ public class Domino implements Parcelable {
         dest.writeInt(val2);
     }
 
+    @Override
+    //So we can search for this in an arrayList.
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+
+        if (obj.getClass() != getClass())
+            return false;
+
+        final Domino other = (Domino) obj;
+
+        if (this.compareTo(other))
+            return true;
+        return false;
+    }
+
+    @Override
+    //Because you always have to override both equals and hashcode if you overide one.
+    public int hashCode() {
+        //multiplied by a small prime.
+        return getSum() * 137;
+    }
+
 
 }
