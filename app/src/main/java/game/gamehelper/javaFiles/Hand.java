@@ -20,7 +20,7 @@ public class Hand {
     private ArrayList<Domino> handAll;
     private LinkedList<Domino> currentHand;
 
-    private DominoGraph runs;
+    private RunController runs;
 
     private int totalPointsHand = 0;
     private int totalDominos;
@@ -51,7 +51,7 @@ public class Hand {
 
         this.largestDouble = largestDouble;
 
-        runs = new DominoGraph(this, this.largestDouble);
+        runs = new RunController(this, this.largestDouble);
     }
 
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
@@ -61,7 +61,7 @@ public class Hand {
         totalDominos = 0;
         this.largestDouble = largestDouble;
 
-        runs = new DominoGraph(this, this.largestDouble);
+        runs = new RunController(this, this.largestDouble);
     }
 
     //Adds a domino to the hand, but only if it doesn't exist
@@ -100,7 +100,6 @@ public class Hand {
         runs.removeDomino(handAll.get(position));
         handAll.remove(position);
         totalPointsHand = getTotalPointsHand() - playHistory.peek().getSum();
-
     }
 
     public void undo(){
