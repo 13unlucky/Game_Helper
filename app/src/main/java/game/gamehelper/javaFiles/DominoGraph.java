@@ -1,7 +1,5 @@
 package game.gamehelper.javaFiles;
 
-import java.util.LinkedList;
-
 /**
  * Created by Jacob on 2/11/2015.
  * A Domino graph, made of DominoVertexes.
@@ -15,7 +13,7 @@ public class DominoGraph {
      * @param h The hand to use to initialize the graph.
      */
     DominoGraph(Hand h) {
-        this (h.getLargestDouble(), h.toArray());
+        this (h.getMaxDouble(), h.toArray());
     }
 
     /**
