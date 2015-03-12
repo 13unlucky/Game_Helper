@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -31,7 +32,8 @@ import game.gamehelper.javaFiles.Hand;
 public class GameWindow extends ActionBarActivity implements
         ConfirmationFragment.ConfirmationListener,
         DrawFragment.DrawListener,
-        EndSelectFragment.EndListener{
+        EndSelectFragment.EndListener,
+        AdapterView.OnItemClickListener{
 
     private Hand hand;
     private GridView listView;
@@ -41,13 +43,15 @@ public class GameWindow extends ActionBarActivity implements
     private Bundle scoreHistory = new Bundle();
     private ArrayList<GameSet> setList = new ArrayList<GameSet>();
     private ArrayList<String> playerList = new ArrayList<String>();
+    private int trainHead = 0;
+    private Bundle handInformation;
     Domino[] data = new Domino[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_window);
-        Bundle bundle = getIntent().getExtras();
+        handInformation = getIntent().getExtras();
 
         if(playerList.size() == 0){
             playerList.add("Player 1");
@@ -60,14 +64,17 @@ public class GameWindow extends ActionBarActivity implements
 
         text.setClickable(false);
 
+//        DialogFragment endSelect = new EndSelectFragment();
+//        endSelect.show(getSupportFragmentManager(), "Select_End");
+
         //use data passed from main window or camera to create a hand
-        if(bundle != null) {
-            if (bundle.getInt("dominoTotal") != 0) {
-                createHand(bundle);
+        if(handInformation != null) {
+            if (handInformation.getInt("dominoTotal") != 0) {
+                createHand();
             }
             else
             {
-                hand = new Hand(bundle.getInt("maxDouble"));
+                hand = new Hand(handInformation.getInt("maxDouble"));
                 data = hand.toArray();
                 text.setText(Integer.toString(hand.getTotalPointsHand()));
             }
@@ -76,6 +83,7 @@ public class GameWindow extends ActionBarActivity implements
         //set ListView adapter to display list of dominos
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         //THIS IS A HACK. REMOVE. USED FOR DEBUGGING PURPOSES.
 //        Domino [] longestRun = hand.getLongestRun().toArray();
@@ -85,10 +93,10 @@ public class GameWindow extends ActionBarActivity implements
         addButtonBehavior();
     }
 
-    public void createHand(Bundle bundle){
+    public void createHand(){
 
-        hand = new Hand((int[][]) bundle.getSerializable("dominoList"),
-                bundle.getInt("dominoTotal"), bundle.getInt("maxDouble"));
+        hand = new Hand((int[][]) handInformation.getSerializable("dominoList"),
+                handInformation.getInt("dominoTotal"), handInformation.getInt("maxDouble"));
 
         //create domino array for adapter, set text and image to corresponding values
         Domino temp[] = hand.toArray();
@@ -111,6 +119,7 @@ public class GameWindow extends ActionBarActivity implements
         Button longestRun = (Button)findViewById(R.id.longestRunButton);
         Button highestScore = (Button)findViewById(R.id.highestScoreButton);
         Button draw = (Button)findViewById(R.id.drawButton);
+        Button unsorted = (Button)findViewById(R.id.unsortedButton);
         Button undo = (Button)findViewById(R.id.undoButton);
 
         //Train head image behavior
@@ -196,11 +205,10 @@ public class GameWindow extends ActionBarActivity implements
                 }
         );
 
-        //undo click handler
-        undo.setOnClickListener(
+        //unsorted click handler
+        unsorted.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // TODO Add real behavior
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
@@ -224,6 +232,18 @@ public class GameWindow extends ActionBarActivity implements
                     }
                 }
         );
+
+        //undo click handler
+        undo.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        hand.undo();
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, hand.toArray());
+                        listView.setAdapter(adapter);
+                    }
+                }
+        );
+
     }
 
     @Override
@@ -370,9 +390,10 @@ public class GameWindow extends ActionBarActivity implements
     @Override
     public void onClose(int var1, int var2) {
         //From draw button, use 2 integers to add a domino to hand
+        //TODO handle domino added
 
         //add domino to hand
-        hand.addDomino(new Domino(var1,var2));
+        hand.addDomino(new Domino(var1, var2));
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, hand.toArray());
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -385,9 +406,12 @@ public class GameWindow extends ActionBarActivity implements
     @Override
     public void onClose(int var1) {
         //From end piece select, replace largest double value in hand
+        //TODO handle train head changed
 
 //        hand.setEndValue(var1);
         image.setImageBitmap(getSide(var1));
+//        trainHead = var1;
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -413,8 +437,9 @@ public class GameWindow extends ActionBarActivity implements
                 b = data.getExtras();
 
                 if(b != null){
+                    handInformation = b;
                     newSet();
-                    createHand(b);
+                    createHand();
 
                     //set ListView adapter to display list of dominos
                     adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);
@@ -429,4 +454,19 @@ public class GameWindow extends ActionBarActivity implements
                 //other
                 return;      }
     }
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //TODO handle domino played
+        Log.w("GameWindow", "Clicked " + position);
+        hand.dominoPlayed(position);
+
+        data = hand.toArray();
+        adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);
+        listView.setAdapter(adapter);
+
+        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        text.setText(Integer.toString(hand.getTotalPointsHand()));
+
+    }
+
+
 }

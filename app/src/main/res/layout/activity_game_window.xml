@@ -100,9 +100,20 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_alignParentRight="true"
+        android:text="Unsorted Hand"
+        android:id="@+id/unsortedButton"
+        android:layout_toRightOf="@+id/gridViewMain"
+        android:layout_below="@+id/drawButton"/>
+
+    <!--Undo button-->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentRight="true"
         android:text="Undo"
         android:id="@+id/undoButton"
         android:layout_toRightOf="@+id/gridViewMain"
-        android:layout_below="@+id/drawButton"/>
+        android:layout_below="@+id/unsortedButton"/>
 
 </RelativeLayout>
