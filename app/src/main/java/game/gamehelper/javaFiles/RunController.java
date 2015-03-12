@@ -270,6 +270,22 @@ public class RunController {
     }
 
     /**
+     * Re-adds a domino to this graph.
+     * @param d The domino to re-add.
+     * @param targetVal The new target value.
+     */
+    public void reAddDomino(Domino d, int targetVal) {
+        if (d.getVal1() > MAX_EDGE || d.getVal2() > MAX_EDGE)
+            throw new AssertionError("New domino is too large.");
+
+        pathsAreCurrent = false;
+        totalEdgeNum++;
+        target = targetVal;
+
+        graph.addEdgePair(d.getVal1(), d.getVal2());
+    }
+
+    /**
      * Removes a domino in this graph.
      * Will only throw exceptions when the domino is larger than the maximum domino.
      * @param d The domino to remove.
