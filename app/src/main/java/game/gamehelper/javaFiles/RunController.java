@@ -34,7 +34,7 @@ public class RunController {
      * @param startDouble The starting double to target.
      */
     RunController(Hand h, int startDouble) {
-        this (h.getLargestDouble(), h.toArray(), h.getLargestDouble());
+        this (h.getMaxDouble(), h.toArray(), h.getMaxDouble());
     }
 
     /**
