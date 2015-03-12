@@ -37,7 +37,7 @@ public class GameWindow extends ActionBarActivity implements
 
     private Hand hand;
     private GridView listView;
-    private ImageView image;
+    private ImageView trainHeadImage;
     private TextView text;
     private DominoAdapter adapter;
     private Bundle scoreHistory = new Bundle();
@@ -60,7 +60,7 @@ public class GameWindow extends ActionBarActivity implements
         text = (TextView)findViewById(R.id.remPoint);
         listView = (GridView) findViewById(R.id.gridViewMain);
         listView.setNumColumns(getResources().getConfiguration().orientation);
-        image = (ImageView) findViewById(R.id.imageView2);
+        trainHeadImage = (ImageView) findViewById(R.id.imageView2);
 
         text.setClickable(false);
 
@@ -104,12 +104,11 @@ public class GameWindow extends ActionBarActivity implements
         data = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
 
         //generate bitmaps for hand
-        //ONLY for the first 10 dominoes.
         for (int i = 0; i < data.length; i++) {
             data[i] = temp[i];
         }
 
-        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
         text.setText(Integer.toString(hand.getTotalPointsHand()));
 
     }
@@ -123,7 +122,7 @@ public class GameWindow extends ActionBarActivity implements
         Button undo = (Button)findViewById(R.id.undoButton);
 
         //Train head image behavior
-        image.setOnClickListener(
+        trainHeadImage.setOnClickListener(
                 new ImageView.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -359,7 +358,7 @@ public class GameWindow extends ActionBarActivity implements
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
         listView.setAdapter(adapter);
 
-        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
         text.setText(Integer.toString(hand.getTotalPointsHand()));
     }
 
@@ -409,7 +408,7 @@ public class GameWindow extends ActionBarActivity implements
         //TODO handle train head changed
 
 //        hand.setEndValue(var1);
-        image.setImageBitmap(getSide(var1));
+        trainHeadImage.setImageBitmap(getSide(var1));
 //        trainHead = var1;
 
     }
@@ -463,7 +462,7 @@ public class GameWindow extends ActionBarActivity implements
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);
         listView.setAdapter(adapter);
 
-        image.setImageBitmap(getSide(hand.getLargestDouble()));
+        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
         text.setText(Integer.toString(hand.getTotalPointsHand()));
 
     }
