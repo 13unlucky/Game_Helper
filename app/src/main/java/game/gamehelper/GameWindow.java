@@ -47,6 +47,15 @@ public class GameWindow extends ActionBarActivity implements
     private Bundle handInformation;
     Domino[] data = new Domino[0];
 
+    /**
+     * Context of a play. Whether we played on the longest, the most points, or the unsorted screen.
+     */
+    public enum WindowContext {
+        SHOWING_LONGEST, SHOWING_MOST_POINTS, SHOWING_UNSORTED
+    }
+
+    private WindowContext windowState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +145,7 @@ public class GameWindow extends ActionBarActivity implements
         longestRun.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // TODO Add behavior
+                        windowState = WindowContext.SHOWING_LONGEST;
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
@@ -167,7 +176,7 @@ public class GameWindow extends ActionBarActivity implements
         highestScore.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // TODO Add behavior
+                        windowState = WindowContext.SHOWING_MOST_POINTS;
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
@@ -208,6 +217,7 @@ public class GameWindow extends ActionBarActivity implements
         unsorted.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
+                        windowState = WindowContext.SHOWING_UNSORTED;
 
                         Domino temp[] = new Domino[1];
                         temp[0] = new Domino(0, 0);
@@ -237,8 +247,26 @@ public class GameWindow extends ActionBarActivity implements
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         hand.undo();
-                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, hand.toArray());
+
+                        //update the pictures & score shown based on our current context
+                        if (windowState == WindowContext.SHOWING_LONGEST) {
+                            data = hand.getLongestRun().toArray();
+                            text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
+                        }
+                        else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
+                            data = hand.getMostPointRun().toArray();
+                            text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
+                        }
+                        else if (windowState == WindowContext.SHOWING_UNSORTED) {
+                            data = hand.toArray();
+                            text.setText(Integer.toString(hand.getTotalPointsHand()));
+                        }
+
+                        adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, data);
                         listView.setAdapter(adapter);
+
+                        //re-sets the old train head.
+                        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
                     }
                 }
         );
@@ -453,18 +481,33 @@ public class GameWindow extends ActionBarActivity implements
                 //other
                 return;      }
     }
+
+    //When each domino is clicked, we delete it from the hand, and update the pictures.
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //TODO handle domino played
         Log.w("GameWindow", "Clicked " + position);
-        hand.dominoPlayed(position);
+        hand.dominoPlayed(position, windowState);
 
-        data = hand.toArray();
+        //update the pictures & score shown based on our current context
+        if (windowState == WindowContext.SHOWING_LONGEST) {
+            data = hand.getLongestRun().toArray();
+            text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
+        }
+        else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
+            data = hand.getMostPointRun().toArray();
+            text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
+        }
+        else if (windowState == WindowContext.SHOWING_UNSORTED) {
+            data = hand.toArray();
+            text.setText(Integer.toString(hand.getTotalPointsHand()));
+        }
+
+        //update the picture to our data array of dominoes.
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);
         listView.setAdapter(adapter);
 
+        //update the train head's image
         trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
-        text.setText(Integer.toString(hand.getTotalPointsHand()));
-
     }
 
 
