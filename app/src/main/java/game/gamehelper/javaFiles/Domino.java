@@ -46,6 +46,10 @@ public class Domino implements Parcelable {
         return val2;
     }
 
+    //returns the oppositve value than the one given on this domino.
+    //Assumes that we give it one of the sides on this domino.
+    public int getOtherVal(int val) { return (val == val1) ? val2 : val1; }
+
     public int getSum() {
         return sum;
     }
