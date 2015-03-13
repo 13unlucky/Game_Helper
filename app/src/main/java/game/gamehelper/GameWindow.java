@@ -399,6 +399,7 @@ public class GameWindow extends ActionBarActivity implements
             scoreHistory.clear();
             setList.clear();
             playerList.clear();
+            playerList.add("Player 1");
             newSet();
         }
         else if(tag.compareTo(getString(R.string.endSet)) == 0){
@@ -421,24 +422,16 @@ public class GameWindow extends ActionBarActivity implements
 
         //add domino to hand
         hand.addDomino(new Domino(var1, var2));
-        adapter = new DominoAdapter(this, R.layout.hand_display_grid, hand.toArray());
-        listView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
-        //update point display
-        text.setText(Integer.toString(hand.getTotalPointsHand()));
+        updateUI();
 
     }
 
     @Override
     public void onClose(int var1) {
         //From end piece select, replace largest double value in hand
-        //TODO handle train head changed
 
-//        hand.setEndValue(var1);
-        trainHeadImage.setImageBitmap(getSide(var1));
-//        trainHead = var1;
-
+        hand.setTrainHead(var1);
+        updateUI();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -487,6 +480,11 @@ public class GameWindow extends ActionBarActivity implements
         //TODO handle domino played
         Log.w("GameWindow", "Clicked " + position);
         hand.dominoPlayed(position, windowState);
+        updateUI();
+    }
+
+    private void updateUI(){
+        //update the screen to reflect changes to hand
 
         //update the pictures & score shown based on our current context
         if (windowState == WindowContext.SHOWING_LONGEST) {
@@ -508,6 +506,7 @@ public class GameWindow extends ActionBarActivity implements
 
         //update the train head's image
         trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
+
     }
 
 

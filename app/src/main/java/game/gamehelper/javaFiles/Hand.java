@@ -213,6 +213,14 @@ public class Hand {
         return trainHead;
     }
 
+    /*
+     * Changes current domino head based on manual input in GameWindow
+     */
+    public void setTrainHead(int head){
+        trainHead = head;
+        runs.setTrainHead(head);
+    }
+
 
 
 }
