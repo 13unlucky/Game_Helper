@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,7 +27,7 @@ public class EndSelectFragment extends DialogFragment{
             public void onClose(int var1);
         }
 
-        int bitmapSize = 250;
+        int bitmapSize = 100;
         int deckMax = 12;
         EndListener mListener;
         GridView gridView;
@@ -43,14 +44,16 @@ public class EndSelectFragment extends DialogFragment{
         super.onStart();
         int windowX;
         int windowY;
+        int sizeOffset;
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        sizeOffset = metrics.densityDpi;
 
         if (getDialog() == null)
             return;
 
         display.getSize(size);
         windowX = size.x - 50;
-        windowY = ( deckMax / (size.x / bitmapSize) ) * bitmapSize + 680;
-        //TODO get height of title, domino, and buttons dynamically and replace 680
+        windowY = (int)(( deckMax / (size.x / bitmapSize) ) * bitmapSize + 1.5 * sizeOffset);
 
         getDialog().getWindow().setLayout(windowX,windowY);
 
@@ -72,6 +75,8 @@ public class EndSelectFragment extends DialogFragment{
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
             Clicker clickListener = new Clicker();
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            bitmapSize = metrics.densityDpi / 2;
 
             //retrieve draw_layout view
             drawView = View.inflate(getActivity(), R.layout.end_select_layout, null);
