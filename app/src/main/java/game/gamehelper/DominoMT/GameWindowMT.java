@@ -49,6 +49,7 @@ public class GameWindowMT extends ActionBarActivity implements
     private int trainHead = 0;
     private Bundle handInformation;
     Domino[] data = new Domino[0];
+    private int maxDouble = 0;
 
     /**
      * Context of a play. Whether we played on the longest, the most points, or the unsorted screen.
@@ -64,6 +65,7 @@ public class GameWindowMT extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_window);
         handInformation = getIntent().getExtras();
+        windowState = WindowContext.SHOWING_UNSORTED;
 
         if(playerList.size() == 0){
             playerList.add("Player 1");
@@ -86,7 +88,8 @@ public class GameWindowMT extends ActionBarActivity implements
             }
             else
             {
-                hand = new HandMT(handInformation.getInt("maxDouble"));
+                maxDouble = handInformation.getInt("maxDouble");
+                hand = new HandMT(maxDouble);
                 data = hand.toArray();
                 text.setText(Integer.toString(hand.getTotalPointsHand()));
             }
@@ -107,6 +110,7 @@ public class GameWindowMT extends ActionBarActivity implements
 
     public void createHand(){
 
+        maxDouble = handInformation.getInt("maxDouble");
         hand = new HandMT((int[][]) handInformation.getSerializable("dominoList"),
                 handInformation.getInt("dominoTotal"), handInformation.getInt("maxDouble"));
 
@@ -397,14 +401,9 @@ public class GameWindowMT extends ActionBarActivity implements
     public void newSet(){
 
         //create empty list
-        DominoAdapter adapter;
-        hand = new HandMT(getIntent().getExtras().getInt("maxDouble"));
-        Domino[] data = hand.toArray();
-        adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
-        listView.setAdapter(adapter);
-
-        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
-        text.setText(Integer.toString(hand.getTotalPointsHand()));
+        hand = new HandMT(maxDouble);
+        data = hand.toArray();
+        updateUI();
     }
 
     @Override
@@ -435,9 +434,7 @@ public class GameWindowMT extends ActionBarActivity implements
     @Override
     public void onClose(int var1, int var2) {
         //From draw button, use 2 integers to add a domino to hand
-        //TODO handle domino added
 
-        //add domino to hand
         hand.addDomino(new Domino(var1, var2));
         updateUI();
 
@@ -494,7 +491,6 @@ public class GameWindowMT extends ActionBarActivity implements
 
     //When each domino is clicked, we delete it from the hand, and update the pictures.
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //TODO handle domino played
         Log.w("GameWindow", "Clicked " + position);
         hand.dominoPlayed(position, windowState);
         updateUI();
@@ -523,8 +519,5 @@ public class GameWindowMT extends ActionBarActivity implements
 
         //update the train head's image
         trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
-
     }
-
-
 }
