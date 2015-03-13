@@ -1,4 +1,4 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 import java.util.LinkedList;
 
@@ -33,7 +33,7 @@ public class RunController {
      * @param h The hand to use to initialize the graph.
      * @param startDouble The starting double to target.
      */
-    RunController(Hand h, int startDouble) {
+    RunController(HandMT h, int startDouble) {
         this (h.getMaxDouble(), h.toArray(), h.getMaxDouble());
     }
 

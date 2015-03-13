@@ -7,23 +7,25 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.view.View;
 import android.content.Intent;
+import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
-import game.gamehelper.javaFiles.GameSet;
+import game.gamehelper.DominoMT.GameWindowMT;
 
 public class MainWindow extends ActionBarActivity {
+    public static final int MEXICAN_TRAIN = 0;
     public static final int MAX_DOMINO_DISPLAY = 24;
     public int[][] tileList = new int[100][2];
     ArrayList<GameSet> setList = new ArrayList<GameSet>();
     ArrayList<String> playerList = new ArrayList<String>();
+    ArrayList<String> gameList = new ArrayList<String>();
     public int totalTiles = 0;
     public int maxDouble = 12;
     public int player = 4;
     public int set = 8;
+    public int selectedGame = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,26 +35,57 @@ public class MainWindow extends ActionBarActivity {
 
         getSupportActionBar().hide();
 
+        gameList.add("Dominos:\nMexicanTrain");
+        gameList.add("Other games");
+        //TODO add other games
+
         Button newGameButton = (Button)findViewById(R.id.newGameButton);
+        Button nextGameButton = (Button)findViewById(R.id.nextGameButton);
         Button cameraButton = (Button)findViewById(R.id.cameraButton);
         Button exitButton = (Button)findViewById(R.id.exitButton);
         Button randomButton = (Button)findViewById(R.id.randomButton);
         Button randomScoreBoardButton = (Button)findViewById(R.id.randomScoreBoard);
 
+        final TextView gameTitle = (TextView) findViewById(R.id.gameTitle);
+
         final Bundle bundle = new Bundle();
 
+        //New Game Button
         newGameButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
-                        bundle.clear();
-                        bundle.putSerializable("dominoList", tileList);
-                        bundle.putInt("dominoTotal", totalTiles);
-                        bundle.putInt("maxDouble", maxDouble);
-                        startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
+                        switch(selectedGame) {
+
+                            case MEXICAN_TRAIN:
+
+                                bundle.clear();
+                                bundle.putSerializable("dominoList", tileList);
+                                bundle.putInt("dominoTotal", totalTiles);
+                                bundle.putInt("maxDouble", maxDouble);
+                                startActivity(new Intent(MainWindow.this, GameWindowMT.class).putExtras(bundle));
+                                break;
+
+                            default:
+                                //TODO add other games
+                                break;
+                        }
                     }
                 }
         );
 
+        //Next Game Button
+        nextGameButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    public void onClick(View v){
+                        selectedGame++;
+                        if(selectedGame > gameList.size() - 1)
+                            selectedGame = 0;
+                        gameTitle.setText(gameList.get(selectedGame));
+                    }
+                }
+        );
+
+        //Random Dominos Button (temp)
         randomButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
@@ -62,11 +95,12 @@ public class MainWindow extends ActionBarActivity {
                         bundle.putSerializable("dominoList", tileList);
                         bundle.putInt("dominoTotal", totalTiles);
                         bundle.putInt("maxDouble", maxDouble);
-                        startActivity(new Intent(MainWindow.this, GameWindow.class).putExtras(bundle));
+                        startActivity(new Intent(MainWindow.this, GameWindowMT.class).putExtras(bundle));
                     }
                 }
         );
 
+        //Random Scoreboard Button (temp)
         randomScoreBoardButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
@@ -82,6 +116,7 @@ public class MainWindow extends ActionBarActivity {
                 }
         );
 
+        //Camera Button (temp)
         cameraButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
@@ -90,6 +125,7 @@ public class MainWindow extends ActionBarActivity {
                 }
         );
 
+        //Exit Button
         exitButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){

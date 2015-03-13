@@ -1,4 +1,4 @@
-package game.gamehelper;
+package game.gamehelper.DominoMT;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,7 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import game.gamehelper.javaFiles.Domino;
+import game.gamehelper.DominoMT.Domino;
+import game.gamehelper.R;
 
 /**
  * Created by Mark Andrews on 2/14/2015.

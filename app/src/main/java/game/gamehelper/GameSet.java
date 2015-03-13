@@ -1,12 +1,9 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.LinkedList;
-import java.util.List;
-
-import game.gamehelper.GameWindow;
 
 /**
  * Created by Mark Andrews on 3/7/2015.

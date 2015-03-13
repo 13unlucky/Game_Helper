@@ -1,9 +1,7 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import game.gamehelper.R;
 /**
  * Author History:
  * Jacob

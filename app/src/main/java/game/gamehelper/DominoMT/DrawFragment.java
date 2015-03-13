@@ -1,4 +1,4 @@
-package game.gamehelper;
+package game.gamehelper.DominoMT;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import game.gamehelper.BitmapAdapter;
+import game.gamehelper.R;
 
 /**
  * Created by Mark Andrews on 2/23/2015.

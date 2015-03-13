@@ -1,4 +1,4 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 /**
  * Created by Jacob on 2/11/2015.
@@ -12,7 +12,7 @@ public class DominoGraph {
      * Generates a DominoGraph from a domino edge array.
      * @param h The hand to use to initialize the graph.
      */
-    DominoGraph(Hand h) {
+    DominoGraph(HandMT h) {
         this (h.getMaxDouble(), h.toArray());
     }
 

@@ -10,6 +10,9 @@ import android.support.v4.app.DialogFragment;
 import android.text.InputType;
 import android.widget.EditText;
 
+import game.gamehelper.R;
+import game.gamehelper.ScoreBoard;
+
 /**
  * Created by Mark Andrews on 3/8/2015.
  * Fragment for changing text or scores in the ScoreBoard

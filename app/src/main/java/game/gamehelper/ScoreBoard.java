@@ -20,8 +20,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import game.gamehelper.javaFiles.GameSet;
-
 /*Class for reading scores recorded from MainWindow and generating table
  */
 
@@ -224,6 +222,14 @@ public class ScoreBoard extends ActionBarActivity implements
                             case MODE_REMOVE:
                                 //remove player
                                 if(playerList.size() > 1){
+                                    b = new Bundle();
+                                    b.putString("positive", getString(R.string.remove));
+                                    b.putString("negative", getString(R.string.cancel));
+
+                                    b.putString("mainText", getString(R.string.deleteRowText)
+                                            + " " + selectedField.getText().toString() + "?");
+
+                                    b.putString("callName", getString(R.string.deleteRow));
                                     newFragment = new ConfirmationFragment();
                                     newFragment.setArguments(b);
                                     newFragment.show(getSupportFragmentManager(), getString(R.string.deleteRow));
@@ -242,14 +248,27 @@ public class ScoreBoard extends ActionBarActivity implements
                     case SET_FIELD:
                         switch (mode) {
                             case MODE_ADD:
-                                //add row
+                                //add column
+                                b = new Bundle();
+                                b.putString("positive", getString(R.string.add));
+                                b.putString("negative", getString(R.string.cancel));
+                                b.putString("mainText", getString(R.string.addColumnText));
+                                b.putString("callName", getString(R.string.addColumn));
                                 newFragment = new ConfirmationFragment();
                                 newFragment.setArguments(b);
                                 newFragment.show(getSupportFragmentManager(), getString(R.string.addColumn));
 
                                 return;
                             case MODE_REMOVE:
-                                //remove row
+                                //remove column
+                                b = new Bundle();
+                                b.putString("positive", getString(R.string.remove));
+                                b.putString("negative", getString(R.string.cancel));
+
+                                b.putString("mainText", getString(R.string.deleteColumnText)
+                                        + " " + selectedField.getText().toString() + "?");
+
+                                b.putString("callName", getString(R.string.deleteColumn));
                                 newFragment = new ConfirmationFragment();
                                 newFragment.setArguments(b);
                                 newFragment.show(getSupportFragmentManager(), getString(R.string.deleteColumn));

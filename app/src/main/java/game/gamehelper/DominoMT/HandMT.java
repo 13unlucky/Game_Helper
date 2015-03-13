@@ -1,9 +1,9 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
-import game.gamehelper.GameWindow;
+import game.gamehelper.Hand;
 /**
  * Author History
  * Jacob
@@ -17,7 +17,7 @@ import game.gamehelper.GameWindow;
  * TODO add remove/add domino functionality.
  */
 
-public class Hand {
+public class HandMT implements Hand{
     private ArrayList<Domino> dominoHandHistory;
     private ArrayList<Domino> currentHand;
 
@@ -35,7 +35,7 @@ public class Hand {
     //Initializes the hand
     //Requires maximum double possible.
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
-    public Hand(int[][] tileList, int totalTiles, int largestDouble) {
+    public HandMT(int[][] tileList, int totalTiles, int largestDouble) {
         dominoHandHistory = new ArrayList<Domino>();
         currentHand = new ArrayList<Domino>();
         totalDominos = totalTiles;
@@ -59,7 +59,7 @@ public class Hand {
     }
 
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
-    public Hand(int largestDouble) {
+    public HandMT(int largestDouble) {
         dominoHandHistory = new ArrayList<Domino>();
         currentHand = new ArrayList<Domino>();
         totalDominos = 0;
@@ -99,18 +99,18 @@ public class Hand {
      * @param position The play position; what order we made the play in.
      * @param playContext The context in which the play was made.
      */
-    public void dominoPlayed(int position, GameWindow.WindowContext playContext) {
+    public void dominoPlayed(int position, GameWindowMT.WindowContext playContext) {
         //We find the "real" position, and change position to match it so we can delete it below.
 
         //find the longest path position.
-        if (playContext == GameWindow.WindowContext.SHOWING_LONGEST) {
+        if (playContext == GameWindowMT.WindowContext.SHOWING_LONGEST) {
             // Converts the longest run to an array and indexes the position.
             Domino d = getLongestRun().toArray()[position];
             //finds the domino in the current hand, and sets the correct position.
             position = currentHand.indexOf(d);
         }
         //find the most points path position.
-        else if (playContext == GameWindow.WindowContext.SHOWING_MOST_POINTS) {
+        else if (playContext == GameWindowMT.WindowContext.SHOWING_MOST_POINTS) {
             // Converts the most points run to an array and indexes the position.
             Domino d = getMostPointRun().toArray()[position];
             //finds the domino in the current hand, and sets the correct position.
@@ -185,6 +185,7 @@ public class Hand {
      * Gets the total points of the current hand.
      * @return Returns the total points of the current hand.
      */
+    @Override
     public int getTotalPointsHand() {
         return totalPointsHand;
     }

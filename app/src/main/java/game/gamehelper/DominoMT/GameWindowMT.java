@@ -3,7 +3,7 @@
  *
  */
 
-package game.gamehelper;
+package game.gamehelper.DominoMT;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,18 +24,21 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import game.gamehelper.javaFiles.Domino;
-import game.gamehelper.javaFiles.GameSet;
-import game.gamehelper.javaFiles.Hand;
+import game.gamehelper.ConfirmationFragment;
+import game.gamehelper.GameSet;
+import game.gamehelper.MainActivity;
+import game.gamehelper.MainWindow;
+import game.gamehelper.R;
+import game.gamehelper.ScoreBoard;
 
 
-public class GameWindow extends ActionBarActivity implements
+public class GameWindowMT extends ActionBarActivity implements
         ConfirmationFragment.ConfirmationListener,
         DrawFragment.DrawListener,
         EndSelectFragment.EndListener,
         AdapterView.OnItemClickListener{
 
-    private Hand hand;
+    private HandMT hand;
     private GridView listView;
     private ImageView trainHeadImage;
     private TextView text;
@@ -83,7 +86,7 @@ public class GameWindow extends ActionBarActivity implements
             }
             else
             {
-                hand = new Hand(handInformation.getInt("maxDouble"));
+                hand = new HandMT(handInformation.getInt("maxDouble"));
                 data = hand.toArray();
                 text.setText(Integer.toString(hand.getTotalPointsHand()));
             }
@@ -104,7 +107,7 @@ public class GameWindow extends ActionBarActivity implements
 
     public void createHand(){
 
-        hand = new Hand((int[][]) handInformation.getSerializable("dominoList"),
+        hand = new HandMT((int[][]) handInformation.getSerializable("dominoList"),
                 handInformation.getInt("dominoTotal"), handInformation.getInt("maxDouble"));
 
         //create domino array for adapter, set text and image to corresponding values
@@ -286,10 +289,18 @@ public class GameWindow extends ActionBarActivity implements
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        DialogFragment newFragment;
+        Bundle b;
 
         switch (item.getItemId()){
             case R.id.action_new_game:
-                DialogFragment newFragment = new ConfirmationFragment();
+                b = new Bundle();
+                b.putString("positive", getString(R.string.yes));
+                b.putString("negative", getString(R.string.cancel));
+                b.putString("mainText", getString(R.string.newGameText));
+                b.putString("callName", getString(R.string.newGame));
+                newFragment = new ConfirmationFragment();
+                newFragment.setArguments(b);
                 newFragment.show(getSupportFragmentManager(), getString(R.string.newGame));
 
                 break;
@@ -299,22 +310,28 @@ public class GameWindow extends ActionBarActivity implements
                 scoreHistory.clear();
                 scoreHistory.putSerializable("setList", setList);
                 scoreHistory.putStringArrayList("playerList", playerList);
-                startActivityForResult(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory),0);
+                startActivityForResult(new Intent(GameWindowMT.this, ScoreBoard.class).putExtras(scoreHistory),0);
 //                startActivity(new Intent(GameWindow.this, ScoreBoard.class).putExtras(scoreHistory));
 
                 break;
 
             case R.id.action_end_round:
                 //write to scoreboard and wipe hand
-                DialogFragment fragment = new ConfirmationFragment();
-                fragment.show(getSupportFragmentManager(), getString(R.string.endSet));
+                b = new Bundle();
+                b.putString("positive", getString(R.string.yes));
+                b.putString("negative", getString(R.string.cancel));
+                b.putString("mainText", getString(R.string.endSetText));
+                b.putString("callName", getString(R.string.endSet));
+                newFragment = new ConfirmationFragment();
+                newFragment.setArguments(b);
+                newFragment.show(getSupportFragmentManager(), getString(R.string.endSet));
 
                 break;
 
 
             case R.id.action_camera:
                 //camera call, overwrite hand
-                startActivityForResult(new Intent(GameWindow.this, MainActivity.class),0);
+                startActivityForResult(new Intent(GameWindowMT.this, MainActivity.class),0);
 
                 break;
 
@@ -381,7 +398,7 @@ public class GameWindow extends ActionBarActivity implements
 
         //create empty list
         DominoAdapter adapter;
-        hand = new Hand(getIntent().getExtras().getInt("maxDouble"));
+        hand = new HandMT(getIntent().getExtras().getInt("maxDouble"));
         Domino[] data = hand.toArray();
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
         listView.setAdapter(adapter);

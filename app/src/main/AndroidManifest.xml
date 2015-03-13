@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GameWindow"
+            android:name=".DominoMT.GameWindowMT"
             android:label="@string/title_activity_game_window" >
         </activity>
         <activity

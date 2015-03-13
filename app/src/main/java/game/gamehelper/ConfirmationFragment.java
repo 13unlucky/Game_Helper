@@ -7,10 +7,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
+import game.gamehelper.R;
+
 /**
  * Created by Mark Andrews on 2/23/2015.
- * Fragment for handling confirmation dialog on action bar new game button
+ * Fragment for handling confirmation dialog
  */
+
 public class ConfirmationFragment extends DialogFragment {
 
     public interface ConfirmationListener {
@@ -22,50 +25,26 @@ public class ConfirmationFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-    //handle button click
-        String tag = this.getTag();
         Bundle b = getArguments();
-        String argument= "";
 
-        //create additional text for delete dialogs
-        if(b != null)
-            argument = " " + b.getString("field") + "?";
+        /**
+         * "positive" = confirm button text
+         * "negative" = cancel button text
+         * "mainText" = action description text
+         * "callName" = fragment tag
+         */
 
-        //get text for dialog type
-        if(tag.compareTo(getString(R.string.newGame)) == 0){
-            dialogText[0] = getString(R.string.yes);
-            dialogText[1] = getString(R.string.cancel);
-            dialogText[2] = getString(R.string.newGameText);
-            dialogText[3] = getString(R.string.newGame);
-        }
-        else if(tag.compareTo(getString(R.string.endSet)) == 0){
-            dialogText[0] = getString(R.string.yes);
-            dialogText[1] = getString(R.string.cancel);
-            dialogText[2] = getString(R.string.endSetText);
-            dialogText[3] = getString(R.string.endSet);
-        }
-        else if(tag.compareTo(getString(R.string.deleteRow)) == 0){
-            dialogText[0] = getString(R.string.remove);
-            dialogText[1] = getString(R.string.cancel);
-            dialogText[2] = getString(R.string.deleteRowText);
-            dialogText[3] = getString(R.string.deleteRow);
-        }
-        else if(tag.compareTo(getString(R.string.deleteColumn)) == 0){
-            dialogText[0] = getString(R.string.remove);
-            dialogText[1] = getString(R.string.cancel);
-            dialogText[2] = getString(R.string.deleteColumnText);
-            dialogText[3] = getString(R.string.deleteColumn);
-        }
-        else if(tag.compareTo(getString(R.string.addColumn)) == 0){
-            dialogText[0] = getString(R.string.add);
-            dialogText[1] = getString(R.string.cancel);
-            dialogText[2] = getString(R.string.addColumnText);
-            dialogText[3] = getString(R.string.addColumn);
-            argument = "";
+        //read dialog text
+        if(b != null){
+            dialogText[0] = b.getString("positive");
+            dialogText[1] = b.getString("negative");
+            dialogText[2] = b.getString("mainText");
+            dialogText[3] = b.getString("callName");
         }
 
+        //setup window and handle click
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(dialogText[2] + argument)
+        builder.setMessage(dialogText[2])
                 .setPositiveButton(dialogText[0], new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //return dialog name on positive click

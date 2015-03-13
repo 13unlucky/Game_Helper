@@ -1,4 +1,4 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 import game.gamehelper.GameHelperPlugin;
 import game.gamehelper.ScoreBoard;

@@ -1,4 +1,4 @@
-package game.gamehelper.javaFiles;
+package game.gamehelper.DominoMT;
 
 /**
  * Created by Jacob on 2/11/2015.
