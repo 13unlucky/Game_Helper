@@ -80,6 +80,10 @@ public class HandMT implements Hand{
         currentHand.add(d);
         totalPointsHand = getTotalPointsHand() + d.getSum();
         runs.addDomino(d);
+
+        playHistory.push(d);
+        trainHeadHistory.push(null);
+        positionPlayedHistory.push(null);
     }
 
     //Removes a domino to hand if it exists.
@@ -148,21 +152,28 @@ public class HandMT implements Hand{
      * adds the domino back in its old play position.
      */
     public void undo() {
-        if (playHistory.size() == 0)
+        if (positionPlayedHistory.size() == 0)
             return;
 
         Domino lastDomino;
-        int position;
+        Integer position;
+        Integer trainHead;
 
         //retrieve last move
         position = positionPlayedHistory.pop();
         trainHead = trainHeadHistory.pop();
         lastDomino = playHistory.pop();
 
+        if(position == null){
+            currentHand.remove(lastDomino);
+            return;
+        }
+
         //add information back to hand
         currentHand.add(position, lastDomino);
         runs.reAddDomino(lastDomino, trainHead);
         totalPointsHand += lastDomino.getSum();
+        this.trainHead = trainHead;
     }
 
     /**
