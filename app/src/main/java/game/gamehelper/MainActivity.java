@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,6 +33,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(v.getId()) {
             case R.id.countButton:
                 String count = new String();
-                count = Integer.toString(countCircles());
+                count = Integer.toString(finddominoesInPicture());
                 countText.setText(count);
                 break;
             case R.id.pictureButton:
@@ -247,48 +247,85 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         circles.release();
     }
     */
-    public int countCircles(){
+    public int finddominoesInPicture()
+    {
 
+        List<Rect> rectangles = new ArrayList<Rect>();
+        List<Point> circleCenters = new ArrayList<Point>();
+
+        //open picture and convert to Bitmap
         File file = new File(CurrentPhotoPath);
         Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
         Bitmap myBitmap32 = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
+        //mats for picture conversion
         rgba = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         gray = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         canny = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         blur = new Mat(myBitmap32.getWidth(),myBitmap32.getHeight(), CvType.CV_8UC1);
         hierarchy = new Mat();
 
+        //Convert Bitmap to MAT
         Utils.bitmapToMat(myBitmap32,rgba,true);
 
-
+        //Take MAT and generate grayscale
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_BGR2GRAY);
+        //make blur from grayscale
         Imgproc.blur(gray, blur, new Size(3, 3), new Point(0, 0), 2);
+        //find canny edges from blurred grayscale
         Imgproc.Canny(blur, canny, 120, 250);
 
+        //find all contours in the canny MAT
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-
-
         Imgproc.findContours(canny, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        //Sort circles and rectangles from junk
-        MatOfPoint2f aprox = new MatOfPoint2f();
-
+        //creat MATs needed for finding things
         MatOfPoint2f tempMOP2f = new MatOfPoint2f();
         MatOfPoint2f approxMOP2F = new MatOfPoint2f();
 
+        //check every contour
         for (int i = 0; i < contours.size(); i++) {
 
+            //get approx polly
             contours.get(i).convertTo(tempMOP2f, CvType.CV_32FC2);
             approxPolyDP(tempMOP2f, approxMOP2F, (arcLength(tempMOP2f, true) * .02), true);
 
             //check for samll and non-convex
-            if (Math.abs(contourArea(contours.get(i))) < 100 || !(isContourConvex(contours.get(i))))
+            if (/*Math.abs(contourArea(contours.get(i))) < 100 ||*/ !(isContourConvex(contours.get(i))))
             {
                 continue;
             }
 
+            //check for approx pollys with 4 sides
+            if(approxMOP2F.cols()== 4 )
+            {
+                //Convert to MatOfPoint
+                MatOfPoint points = new MatOfPoint( approxMOP2F.toArray() );
 
+                // Get bounding rect of contour
+                Rect rect = Imgproc.boundingRect(points);
+                //adds to list of rectangles
+                rectangles.add(rect);
+
+            }
+
+            //checks for circles
+            if(approxMOP2F.cols() > 6 )
+            {
+                double area = Imgproc.contourArea(contours.get(i));
+                Rect rect = Imgproc.boundingRect(contours.get(i));
+                double radius = rect.width / 2;
+
+                if((1 - ((double)rect.width/(double)rect.height) <= .2) && (1 - (area /Math.PI  * Math.pow(radius, 2))) <= .2)
+                {
+                    //creat a small bounding circle and save its center
+                    Point point = new Point();
+                    float[] r = new float[contours.size()];
+                    Imgproc.minEnclosingCircle(tempMOP2f, point,r);
+                    circleCenters.add(point);
+                }
+
+            }
 
 
         }
