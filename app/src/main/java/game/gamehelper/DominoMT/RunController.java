@@ -8,6 +8,7 @@ import java.util.LinkedList;
  */
 public class RunController {
     private final int MAX_EDGE;
+    private final int TRAIN_HEAD;
     private DominoGraph graph;
     private int target;
 
@@ -34,7 +35,7 @@ public class RunController {
      * @param startDouble The starting double to target.
      */
     RunController(HandMT h, int startDouble) {
-        this (h.getMaxDouble(), h.toArray(), h.getMaxDouble());
+        this (h.getMaxDouble(), h.toArray(), startDouble);
     }
 
     /**
@@ -58,7 +59,7 @@ public class RunController {
         pathsAreCurrent = false;
         longest = new DominoRun();
         mostPoints = new DominoRun();
-        target = startDouble;
+        TRAIN_HEAD = target = startDouble;
         mostPointRuns = new LinkedList<DominoRun>();
         longestRuns = new LinkedList<DominoRun>();
         currentRun = new DominoRun();
@@ -77,6 +78,7 @@ public class RunController {
         pathsFound = 0;
 
         //We need to play the max double first! Will only show the max double.
+        /*
         if (graph.hasEdge(MAX_EDGE, MAX_EDGE)) {
             currentRun.addDomino(new Domino(MAX_EDGE, MAX_EDGE));
 
@@ -88,7 +90,7 @@ public class RunController {
             longestRuns.clear();
             mostPointRuns.clear();
             return;
-        }
+        }*/
 
         //we've already played the max double, try to build off the current target.
         mostPointRuns.clear();
@@ -96,22 +98,28 @@ public class RunController {
         currentRun.clear();
 
         //Start edges must be played on the the start.
-        boolean startEdges[] = graph.getMaxEdges();
+        boolean startEdges[] = graph.dumpEdges(TRAIN_HEAD);
 
         //We blank out the start edges.
-        for (int i = MAX_EDGE; i >= 0; i--) {
-            graph.removeEdgePair(MAX_EDGE, i);
+        for (int i = TRAIN_HEAD; i >= 0; i--) {
+            graph.removeEdgePair(TRAIN_HEAD, i);
         }
 
         //We need to start on the main domino, so we go through each possible lead-off individually.
         //Remember, edges that map to the main domino must be played on the main domino.
-        if (target == MAX_EDGE) {
-            for (int i = 0; i <= MAX_EDGE; i++) {
+        if (target == TRAIN_HEAD) {
+            for (int i = MAX_EDGE; i >= 0; i--) {
+                //if we have a start edge we can play off of, try to play on it.
                 if (startEdges[i]) {
                     currentRun.clear();
-                    graph.addEdgePair(i, MAX_EDGE);
-                    traverse(MAX_EDGE);
-                    graph.removeEdgePair(i, MAX_EDGE);
+                    graph.addEdgePair(i, TRAIN_HEAD);
+
+                    //early exit: if we find one that traverses whole of graph, we can exit early.
+                    if (traverse(MAX_EDGE)) {
+                        graph.removeEdgePair(i, TRAIN_HEAD);
+                        break;
+                    }
+                    graph.removeEdgePair(i, TRAIN_HEAD);
                 }
             }
         }
@@ -124,7 +132,7 @@ public class RunController {
         //Re-add the edges to the main domino at the end.
         for (int i = 0; i <= MAX_EDGE; i++) {
             if (startEdges[i])
-                graph.addEdgePair(MAX_EDGE, i);
+                graph.addEdgePair(TRAIN_HEAD, i);
         }
 
         //simple heuristic to remove copy runs. Still will need more processing.
@@ -217,8 +225,21 @@ public class RunController {
             return false;
         }
 
+        //we should always use the self-double first. There will never be a case where we shouldn't.
+        if (graph.hasEdge(startVertex, startVertex)) {
+            graph.toggleEdgePair(startVertex, startVertex);
+            currentRun.addDomino(new Domino(startVertex, startVertex));
+            if (traverse(startVertex)) {
+                graph.toggleEdgePair(startVertex, startVertex);
+                return true;
+            }
+            currentRun.popEnd();
+            graph.toggleEdgePair(startVertex, startVertex);
+            return false;
+        }
+
         //Look at the edges in this vertex.
-        for (int i = 0; i <= MAX_EDGE; i++) {
+        for (int i = MAX_EDGE; i >= 0; i--) {
             if (graph.hasEdge(startVertex, i)) {
                 graph.toggleEdgePair(startVertex, i);
                 currentRun.addDomino(new Domino(startVertex, i));
@@ -261,6 +282,7 @@ public class RunController {
 
         //re-set paths if the domino isn't already in the graph.
         //TODO: Add BFS to determine if we need to re-calculate or not
+        //TODO: Add check for add double; test if we can insert into current runs and skip path recalc.
         if (!graph.hasEdge(d.getVal1(), d.getVal2())) {
             pathsAreCurrent = false;
             totalEdgeNum++;

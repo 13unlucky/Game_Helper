@@ -102,11 +102,11 @@ public class DominoGraph {
     }
 
     /**
-     * Dumps all the max domino's edges.
-     * @return Returns all the edges on the MaxDomino
+     * Dumps all the indicated position's edges.
+     * @return Returns all the edges on the specified vertex.
      */
-    public boolean[] getMaxEdges() {
-        return graph[MAX_EDGE].dumpEdges();
+    public boolean[] dumpEdges(int vertex) {
+        return graph[vertex].dumpEdges();
     }
 
     /**
