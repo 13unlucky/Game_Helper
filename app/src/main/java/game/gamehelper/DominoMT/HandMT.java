@@ -164,8 +164,9 @@ public class HandMT implements Hand{
         trainHead = trainHeadHistory.pop();
         lastDomino = playHistory.pop();
 
-        if(position == null){
-            currentHand.remove(lastDomino);
+        //in the case we added something before (null), we want to remove it now.
+        if (position == null){
+            removeDomino(lastDomino);
             return;
         }
 
@@ -190,6 +191,16 @@ public class HandMT implements Hand{
      */
     public DominoRun getMostPointRun() {
         return runs.getMostPointPath();
+    }
+
+    //will be used for the not in run button.
+    public Domino[] notLongestRun() {
+        return null;
+    }
+
+    //will also be used for the not in run button.
+    public Domino[] notMostPointsRun() {
+        return null;
     }
 
     /**
