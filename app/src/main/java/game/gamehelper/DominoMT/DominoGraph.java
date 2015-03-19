@@ -86,15 +86,8 @@ public class DominoGraph {
      */
     public void removeEdgePair(int v1, int v2) {
         try {
-            if (graph[v1].hasEdge(v2)) {
-                if (v1 != v2) {
-                    graph[v1].toggleEdge(v2);
-                    graph[v2].toggleEdge(v1);
-                }
-                else {
-                    graph[v1].toggleEdge(v2);
-                }
-            }
+            graph[v1].removeEdge(v2);
+            graph[v2].removeEdge(v1);
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
             throw new AssertionError("Out of bounds! Bad domino!");

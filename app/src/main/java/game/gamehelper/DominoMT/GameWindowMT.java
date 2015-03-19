@@ -91,7 +91,7 @@ public class GameWindowMT extends ActionBarActivity implements
                 maxDouble = handInformation.getInt("maxDouble");
                 hand = new HandMT(maxDouble);
                 data = hand.toArray();
-                text.setText(Integer.toString(hand.getTotalPointsHand()));
+                updatePointValueText();
             }
         }
 
@@ -125,8 +125,19 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
         trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
-        text.setText(Integer.toString(hand.getTotalPointsHand()));
+        updatePointValueText();
+    }
 
+    private void updatePointValueText() {
+        if (windowState == WindowContext.SHOWING_LONGEST) {
+            text.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getLongestRun().getPointVal()));
+        }
+        else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
+            text.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getMostPointRun().getPointVal()));
+        }
+        else if (windowState == WindowContext.SHOWING_UNSORTED) {
+            text.setText("Hand Value: " + (hand.getTotalPointsHand()));
+        }
     }
 
     public void addButtonBehavior(){
@@ -174,7 +185,7 @@ public class GameWindowMT extends ActionBarActivity implements
                         listView.setAdapter(adapter);
 
                         //update point display
-                        text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
+                        updatePointValueText();
                     }
                 }
         );
@@ -204,7 +215,7 @@ public class GameWindowMT extends ActionBarActivity implements
                         listView.setAdapter(adapter);
 
                         //update point display
-                        text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
+                        updatePointValueText();
                     }
                 }
         );
@@ -244,7 +255,7 @@ public class GameWindowMT extends ActionBarActivity implements
                         listView.setAdapter(adapter);
 
                         //update point display
-                        text.setText(Integer.toString(hand.getTotalPointsHand()));
+                        updatePointValueText();
                     }
                 }
         );
@@ -258,16 +269,15 @@ public class GameWindowMT extends ActionBarActivity implements
                         //update the pictures & score shown based on our current context
                         if (windowState == WindowContext.SHOWING_LONGEST) {
                             data = hand.getLongestRun().toArray();
-                            text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
                         }
                         else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
                             data = hand.getMostPointRun().toArray();
-                            text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
                         }
                         else if (windowState == WindowContext.SHOWING_UNSORTED) {
                             data = hand.toArray();
-                            text.setText(Integer.toString(hand.getTotalPointsHand()));
                         }
+
+                        updatePointValueText();
 
                         adapter = new DominoAdapter(v.getContext(), R.layout.hand_display_grid, data);
                         listView.setAdapter(adapter);
@@ -502,16 +512,15 @@ public class GameWindowMT extends ActionBarActivity implements
         //update the pictures & score shown based on our current context
         if (windowState == WindowContext.SHOWING_LONGEST) {
             data = hand.getLongestRun().toArray();
-            text.setText(Integer.toString(hand.getLongestRun().getPointVal()));
         }
         else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
             data = hand.getMostPointRun().toArray();
-            text.setText(Integer.toString(hand.getMostPointRun().getPointVal()));
         }
         else if (windowState == WindowContext.SHOWING_UNSORTED) {
             data = hand.toArray();
-            text.setText(Integer.toString(hand.getTotalPointsHand()));
         }
+
+        updatePointValueText();
 
         //update the picture to our data array of dominoes.
         adapter = new DominoAdapter(this, R.layout.hand_display_grid, this.data);

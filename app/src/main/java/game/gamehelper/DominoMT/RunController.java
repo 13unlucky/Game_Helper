@@ -77,22 +77,7 @@ public class RunController {
         repeatPointsFound = 0;
         pathsFound = 0;
 
-        //We need to play the max double first! Will only show the max double.
-        /*
-        if (graph.hasEdge(MAX_EDGE, MAX_EDGE)) {
-            currentRun.addDomino(new Domino(MAX_EDGE, MAX_EDGE));
-
-            longest = currentRun.deepCopy();
-            mostPoints = currentRun.deepCopy();
-
-            pathsAreCurrent = true;
-            target = MAX_EDGE;
-            longestRuns.clear();
-            mostPointRuns.clear();
-            return;
-        }*/
-
-        //we've already played the max double, try to build off the current target.
+        //Try to build off the current target.
         mostPointRuns.clear();
         longestRuns.clear();
         currentRun.clear();
@@ -100,8 +85,8 @@ public class RunController {
         //Start edges must be played on the the start.
         boolean startEdges[] = graph.dumpEdges(TRAIN_HEAD);
 
-        //We blank out the start edges.
-        for (int i = TRAIN_HEAD; i >= 0; i--) {
+        //We blank out the start edges; we can only ever play one off of that one.
+        for (int i = 0; i <= MAX_EDGE; i++) {
             graph.removeEdgePair(TRAIN_HEAD, i);
         }
 
@@ -229,6 +214,8 @@ public class RunController {
         if (graph.hasEdge(startVertex, startVertex)) {
             graph.toggleEdgePair(startVertex, startVertex);
             currentRun.addDomino(new Domino(startVertex, startVertex));
+
+            //traverse down the graph; if we visit the whole graph, return early.
             if (traverse(startVertex)) {
                 graph.toggleEdgePair(startVertex, startVertex);
                 return true;
@@ -243,7 +230,8 @@ public class RunController {
             if (graph.hasEdge(startVertex, i)) {
                 graph.toggleEdgePair(startVertex, i);
                 currentRun.addDomino(new Domino(startVertex, i));
-                //we've finished! We've visited every vertex in the graph, we can leave early.
+
+                //traverse down the graph; if we visit the whole graph, return early.
                 if (traverse(i)) {
                     graph.toggleEdgePair(startVertex, i);
                     return true;
@@ -282,19 +270,30 @@ public class RunController {
 
         //re-set paths if the domino isn't already in the graph.
         //TODO: Add BFS to determine if we need to re-calculate or not
-        //TODO: Add check for add double; test if we can insert into current runs and skip path recalc.
         if (!graph.hasEdge(d.getVal1(), d.getVal2())) {
+            //double-domino check, worth the O(n) time search for a potential O(2^n) savings.
+            if (pathsAreCurrent && d.getVal1() == d.getVal2()) {
+                //checks the two runs for equality up till the match, and adds to run if so.
+                if (longest.addMidRunDouble(mostPoints, d.getVal1(), target)) {
+                    graph.addEdgePair(d.getVal1(), d.getVal1());
+                    totalEdgeNum++;
+                    return;
+                }
+            }
+
             pathsAreCurrent = false;
             totalEdgeNum++;
+            graph.addEdgePair(d.getVal1(), d.getVal2());
         }
-
-        graph.addEdgePair(d.getVal1(), d.getVal2());
     }
 
     /**
-     * Re-adds a domino to this graph.
+     * Re-adds a domino to this graph. Note: Performance-wise, there's really nothing we can do here,
+     * as we don't know if the old value was in both longest and most points runs.
+     *
      * @param d The domino to re-add.
      * @param targetVal The new target value.
+     *
      */
     public void reAddDomino(Domino d, int targetVal) {
         if (d.getVal1() > MAX_EDGE || d.getVal2() > MAX_EDGE)
@@ -387,8 +386,14 @@ public class RunController {
         return retVal;
     }
 
+    /**
+     * Causes this train to use a new head.
+     * @param head The new head to use. Ignores if no change (same head).
+     */
     public void setTrainHead(int head){
-        target = head;
-        recalculatePaths();
+        if (head != target) {
+            target = head;
+            recalculatePaths();
+        }
     }
 }

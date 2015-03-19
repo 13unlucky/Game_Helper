@@ -20,12 +20,9 @@ public class DominoVertex {
      * @param edgeNum The vertex to add an edge with.
      */
     public void addEdge(int edgeNum) {
-        try {
+        if (!edgeList[edgeNum]) {
             edgeList[edgeNum] = true;
             numEdges++;
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
         }
     }
 
@@ -34,15 +31,21 @@ public class DominoVertex {
      * @param edgeNum The vertex to toggle an edge with.
      */
     public void toggleEdge(int edgeNum) {
-        try {
-            if (edgeList[edgeNum])
-                numEdges--;
-            else
-                numEdges++;
-            edgeList[edgeNum] = !edgeList[edgeNum];
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+        if (edgeList[edgeNum])
+            numEdges--;
+        else
+            numEdges++;
+        edgeList[edgeNum] = !edgeList[edgeNum];
+    }
+
+    /**
+     * Removes an edge from this vertex
+     * @param edgeNum The vertex to remove and edge from.
+     */
+    public void removeEdge(int edgeNum) {
+        if (edgeList[edgeNum]) {
+            edgeList[edgeNum] = false;
+            numEdges--;
         }
     }
 
@@ -52,13 +55,7 @@ public class DominoVertex {
      * @return True if has edge, false otherwise.
      */
     public boolean hasEdge(int edgeNum) {
-        try {
-            return edgeList[edgeNum];
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return edgeList[edgeNum];
     }
 
     /**
