@@ -1,6 +1,7 @@
 package game.gamehelper.DominoMT;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * Created by Jacob on 2/11/2015.
@@ -15,13 +16,13 @@ public class DominoRun {
         path = new LinkedList<Domino>();
     }
 
+    /**
+     * Adds a domino to DominoRun. Can technically not allign with previous dominoes, as we're
+     * concerned with efficiency, not with silly things like a real domino run.
+     * @param d The new domino to add to the end of the run.
+     */
     public void addDomino(Domino d) {
         path.addLast(d);
-        pointVal += d.getSum();
-    }
-
-    public void addDominoFront(Domino d) {
-        path.addFirst(d);
         pointVal += d.getSum();
     }
 
@@ -101,8 +102,68 @@ public class DominoRun {
         return copy;
     }
 
+    //equals method
+    public boolean isEqualTo(DominoRun other) {
+        //checks for same points, .equals will check for length
+        if (this.getPointVal() != other.getPointVal())
+            return false;
+        return path.equals(other.getPath());
+    }
+
+    /**
+     * this method attempts to add a mid-run double, returning true if successful
+     * @param other The other run to compare against (must be equal till the vertex of d)
+     * @param dominoVertex The vertex at which to stop
+     * @param target The original target of the run.
+     * @return True if success, false if failure.
+     */
+    public boolean addMidRunDouble(DominoRun other, int dominoVertex, int target) {
+        ListIterator<Domino> thisIter = this.getPath().listIterator();
+        ListIterator<Domino> otherIter = other.getPath().listIterator();
+        boolean firstRun = true;
+
+        //DominoRun isn't guaranteed to be ordered, as that would be dangerous during development.
+        //This method won't be called much, anyways.
+        while (thisIter.hasNext() && otherIter.hasNext()) {
+            Domino nextDomino = thisIter.next();
+
+            //if we hit a domino that's not equal, exit; we can't add the double.
+            if (!nextDomino.equals(otherIter.next()))
+                return false;
+
+            //We know the dominoes are equal, test to see if they share a side with our double.
+            if (nextDomino.getVal1() == dominoVertex || nextDomino.getVal2() == dominoVertex) {
+                //if it's at the first position and the vertex matches what we have to play on,
+                // we have to back up the iterators. Otherwise, it's fine.
+                if (firstRun && target == dominoVertex) {
+                    thisIter.previous();
+                    otherIter.previous();
+                }
+
+                //add to list at new position
+                thisIter.add(new Domino(dominoVertex, dominoVertex));
+                otherIter.add(new Domino(dominoVertex, dominoVertex));
+
+                //remember to add points!
+                this.pointVal += dominoVertex * 2;
+                other.pointVal += dominoVertex * 2;
+
+                return true;
+            }
+
+            //If we reach here, we're not on the first loop through anymore.
+            firstRun = false;
+        }
+
+        //since there aren't any more dominoes, we've failed.
+        return false;
+    }
+
     //returns these dominoes as an array.
     public Domino[] toArray() {
         return path.toArray(new Domino[path.size()]);
     }
+
+    //returns the path for private functionality
+    private LinkedList<Domino> getPath() { return this.path; }
 }

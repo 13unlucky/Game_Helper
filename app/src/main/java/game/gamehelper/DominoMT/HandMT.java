@@ -165,8 +165,11 @@ public class HandMT implements Hand{
         lastDomino = playHistory.pop();
 
         //in the case we added something before (null), we want to remove it now.
-        if (position == null){
+        if (position == null) {
             removeDomino(lastDomino);
+
+            //re-set train head to the current one, fixes a bug where the runs decides to "play" the domino.
+            setTrainHead(this.trainHead);
             return;
         }
 
