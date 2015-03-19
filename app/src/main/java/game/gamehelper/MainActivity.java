@@ -179,7 +179,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
-
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private void dispatchTakePictureIntent() {
 
@@ -192,18 +192,31 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 photoFile = createImageFile();
 
             } catch (IOException ex) {
+                ex.printStackTrace();
                 // Error occurred while creating the File
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent,1);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            Bitmap bitmap = BitmapFactory.decodeFile(CurrentPhotoPath);
+            picture.setImageBitmap(bitmap);
+            countText.setText(CurrentPhotoPath);
+
+        }
+    }
 
     private File createImageFile() throws IOException {
         // Create an image file name
