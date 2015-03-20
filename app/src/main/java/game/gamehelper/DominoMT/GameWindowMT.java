@@ -38,6 +38,11 @@ public class GameWindowMT extends ActionBarActivity implements
         EndSelectFragment.EndListener,
         AdapterView.OnItemClickListener{
 
+    private static int DOUBLE_NINE = 9;
+    private static int DOUBLE_TWELVE = 12;
+    private static int DOUBLE_FIFTEEN = 15;
+    private static int DOUBLE_EIGHTEEN = 18;
+
     private HandMT hand;
     private GridView listView;
     private ImageView trainHeadImage;
@@ -67,9 +72,6 @@ public class GameWindowMT extends ActionBarActivity implements
         handInformation = getIntent().getExtras();
         windowState = WindowContext.SHOWING_UNSORTED;
 
-        if(playerList.size() == 0){
-            playerList.add("Player 1");
-        }
 
         text = (TextView)findViewById(R.id.remPoint);
         listView = (GridView) findViewById(R.id.gridViewMain);
@@ -77,35 +79,23 @@ public class GameWindowMT extends ActionBarActivity implements
         trainHeadImage = (ImageView) findViewById(R.id.imageView2);
 
         text.setClickable(false);
+        addButtonBehavior();
 
-//        DialogFragment endSelect = new EndSelectFragment();
-//        endSelect.show(getSupportFragmentManager(), "Select_End");
+        listView.setOnItemClickListener(this);
 
-        //use data passed from main window or camera to create a hand
-        if(handInformation != null) {
-            if (handInformation.getInt("dominoTotal") != 0) {
-                createHand();
-            }
-            else
-            {
-                maxDouble = handInformation.getInt("maxDouble");
-                hand = new HandMT(maxDouble);
-                data = hand.toArray();
-                updatePointValueText();
-            }
+        if(MainWindow.debug){
+            newGameDebug();
+            return;
         }
 
-        //set ListView adapter to display list of dominos
-        adapter = new DominoAdapter(this, R.layout.hand_display_grid, data);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        newGame();
+
 
         //THIS IS A HACK. REMOVE. USED FOR DEBUGGING PURPOSES.
 //        Domino [] longestRun = hand.getLongestRun().toArray();
 //        adapter = new DominoAdapter(this, R.layout.hand_display_grid, longestRun);
 //        listView.setAdapter(adapter);
 
-        addButtonBehavior();
     }
 
     public void createHand(){
@@ -124,7 +114,7 @@ public class GameWindowMT extends ActionBarActivity implements
             data[i] = temp[i];
         }
 
-        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
+        trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(), getApplicationContext()));
         updatePointValueText();
     }
 
@@ -283,7 +273,7 @@ public class GameWindowMT extends ActionBarActivity implements
                         listView.setAdapter(adapter);
 
                         //re-sets the old train head.
-                        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
+                        trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(), getApplicationContext()));
                     }
                 }
         );
@@ -358,54 +348,35 @@ public class GameWindowMT extends ActionBarActivity implements
         return true;
     }
 
-    //Load image for domino side value
-    private Bitmap getSide(int value){
 
-        Bitmap side;
-
-        switch(value){
-            case 1:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_one);
-                break;
-            case 2:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_two);
-                break;
-            case 3:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_three);
-                break;
-            case 4:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_four);
-                break;
-            case 5:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_five);
-                break;
-            case 6:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_six);
-                break;
-            case 7:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_seven);
-                break;
-            case 8:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_eight);
-                break;
-            case 9:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_nine);
-                break;
-            case 10:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_ten);
-                break;
-            case 11:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_eleven);
-                break;
-            case 12:
-                side = BitmapFactory.decodeResource(getResources(), R.drawable.dom_twelve);
-                break;
-            case 0:
-            default:
-                side = Bitmap.createBitmap(200,200,Bitmap.Config.ARGB_8888);
-                break;
+    public void newGameDebug(){
+        //use data passed from main window or camera to create a hand
+        if(handInformation != null) {
+            if (handInformation.getInt("dominoTotal") != 0) {
+                createHand();
+            }
+            else
+            {
+                maxDouble = handInformation.getInt("maxDouble");
+                hand = new HandMT(maxDouble);
+                data = hand.toArray();
+                updatePointValueText();
+            }
         }
-        return side;
+        if(playerList.size() == 0){
+            playerList.add("Player 1");
+        }
+        createHand();
+        updateUI();
+
+    }
+
+    public void newGame(){
+        scoreHistory.clear();
+        setList.clear();
+        playerList.clear();
+        playerList.add("Player 1");
+        newSet();
     }
 
     public void newSet(){
@@ -422,11 +393,7 @@ public class GameWindowMT extends ActionBarActivity implements
 
         if(tag.compareTo(getString(R.string.newGame)) == 0){
             //clear data and start new set
-            scoreHistory.clear();
-            setList.clear();
-            playerList.clear();
-            playerList.add("Player 1");
-            newSet();
+            newGame();
         }
         else if(tag.compareTo(getString(R.string.endSet)) == 0){
             //create gameset from hand and add to scoreboard
@@ -527,6 +494,6 @@ public class GameWindowMT extends ActionBarActivity implements
         listView.setAdapter(adapter);
 
         //update the train head's image
-        trainHeadImage.setImageBitmap(getSide(hand.getTrainHead()));
+        trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(),getApplicationContext()));
     }
 }

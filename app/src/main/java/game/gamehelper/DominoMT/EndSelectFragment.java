@@ -120,7 +120,7 @@ public class EndSelectFragment extends DialogFragment{
                     //mark value
                     position++;
                     var1 = position;
-                    endValue.setImageDrawable(getSide(position));
+                    endValue.setImageBitmap(Domino.getSide(position, getActivity().getApplicationContext()));
                 }
             });
 
@@ -146,40 +146,6 @@ public class EndSelectFragment extends DialogFragment{
             return builder.create();
         }
 
-        //Load image for domino side value
-        private Drawable getSide(int value){
-
-
-            switch(value){
-                case 1:
-                    return getResources().getDrawable(R.drawable.dom_one);
-                case 2:
-                    return getResources().getDrawable(R.drawable.dom_two);
-                case 3:
-                    return getResources().getDrawable(R.drawable.dom_three);
-                case 4:
-                    return getResources().getDrawable( R.drawable.dom_four);
-                case 5:
-                    return getResources().getDrawable(R.drawable.dom_five);
-                case 6:
-                    return getResources().getDrawable(R.drawable.dom_six);
-                case 7:
-                    return getResources().getDrawable(R.drawable.dom_seven);
-                case 8:
-                    return getResources().getDrawable(R.drawable.dom_eight);
-                case 9:
-                    return getResources().getDrawable(R.drawable.dom_nine);
-                case 10:
-                    return getResources().getDrawable(R.drawable.dom_ten);
-                case 11:
-                    return getResources().getDrawable(R.drawable.dom_eleven);
-                case 12:
-                    return getResources().getDrawable(R.drawable.dom_twelve);
-                case 0:
-                default:
-                    return null;
-            }
-        }
         public class Clicker implements View.OnClickListener {
             @Override
             public void onClick(View v) {

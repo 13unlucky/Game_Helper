@@ -1,7 +1,12 @@
 package game.gamehelper.DominoMT;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import game.gamehelper.R;
 /**
  * Author History:
  * Jacob
@@ -89,6 +94,57 @@ public class Domino implements Parcelable {
     public int hashCode() {
         //multiplied by a small prime.
         return getSum() * 137;
+    }
+
+
+    //Load image for domino side value
+    public static Bitmap getSide(int value, Context context){
+
+        Bitmap side;
+
+        switch(value){
+            case 1:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_one);
+                break;
+            case 2:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_two);
+                break;
+            case 3:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_three);
+                break;
+            case 4:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_four);
+                break;
+            case 5:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_five);
+                break;
+            case 6:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_six);
+                break;
+            case 7:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_seven);
+                break;
+            case 8:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_eight);
+                break;
+            case 9:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_nine);
+                break;
+            case 10:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_ten);
+                break;
+            case 11:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_eleven);
+                break;
+            case 12:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_twelve);
+                break;
+            case 0:
+            default:
+                side = Bitmap.createBitmap(200,200,Bitmap.Config.ARGB_8888);
+                break;
+        }
+        return side;
     }
 
 

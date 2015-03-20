@@ -125,7 +125,7 @@ public class DrawFragment extends DialogFragment {
         bitmapAdapter = new BitmapAdapter(getActivity(), mList);
         bitmapAdapter.setImageSize(bitmapSize);
         gridView.setAdapter(bitmapAdapter);
-        gridView.setNumColumns(size.x / bitmapSize);
+        gridView.setNumColumns((size.x - 50) / bitmapSize);
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -138,11 +138,11 @@ public class DrawFragment extends DialogFragment {
                     default:
                     case 0:
                         var1 = position;
-                        leftSide.setImageDrawable(getSide(position));
+                        leftSide.setImageBitmap(Domino.getSide(position, getActivity().getApplicationContext()));
                         break;
                     case 1:
                         var2 = position;
-                        rightSide.setImageDrawable(getSide(position));
+                        rightSide.setImageBitmap(Domino.getSide(position, getActivity().getApplicationContext()));
                 }
 
                 currentSide ^= 1;
@@ -172,40 +172,6 @@ public class DrawFragment extends DialogFragment {
         return builder.create();
     }
 
-    //Load image for domino side value
-    private Drawable getSide(int value){
-
-
-        switch(value){
-            case 1:
-                return getResources().getDrawable(R.drawable.dom_one);
-            case 2:
-                return getResources().getDrawable(R.drawable.dom_two);
-            case 3:
-                return getResources().getDrawable(R.drawable.dom_three);
-            case 4:
-                return getResources().getDrawable( R.drawable.dom_four);
-            case 5:
-                return getResources().getDrawable(R.drawable.dom_five);
-            case 6:
-                return getResources().getDrawable(R.drawable.dom_six);
-            case 7:
-                return getResources().getDrawable(R.drawable.dom_seven);
-            case 8:
-                return getResources().getDrawable(R.drawable.dom_eight);
-            case 9:
-                return getResources().getDrawable(R.drawable.dom_nine);
-            case 10:
-                return getResources().getDrawable(R.drawable.dom_ten);
-            case 11:
-                return getResources().getDrawable(R.drawable.dom_eleven);
-            case 12:
-                return getResources().getDrawable(R.drawable.dom_twelve);
-            case 0:
-            default:
-                return null;
-        }
-    }
     public class Clicker implements View.OnClickListener {
         @Override
         public void onClick(View v) {

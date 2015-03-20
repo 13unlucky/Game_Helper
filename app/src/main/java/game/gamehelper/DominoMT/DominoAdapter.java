@@ -71,8 +71,8 @@ public class DominoAdapter extends ArrayAdapter<Domino> {
         Bitmap fullTile;
 
         bg = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_bg);
-        side1 = getSide(a.getVal1(), view);
-        side2 = getSide(a.getVal2(), view);
+        side1 = Domino.getSide(a.getVal1(), view.getContext());
+        side2 = Domino.getSide(a.getVal2(), view.getContext());
 
         //copy immutable bitmap generated previously to a mutable bitmap and impose the sides
         bg = bg.copy(Bitmap.Config.ARGB_8888, true);
@@ -92,56 +92,6 @@ public class DominoAdapter extends ArrayAdapter<Domino> {
         bg.recycle();
 
         return fullTile;
-    }
-
-    //Load image for domino side value
-    private Bitmap getSide(int value, View view){
-
-        Bitmap side;
-
-        switch(value){
-            case 1:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_one);
-                break;
-            case 2:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_two);
-                break;
-            case 3:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_three);
-                break;
-            case 4:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_four);
-                break;
-            case 5:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_five);
-                break;
-            case 6:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_six);
-                break;
-            case 7:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_seven);
-                break;
-            case 8:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_eight);
-                break;
-            case 9:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_nine);
-                break;
-            case 10:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_ten);
-                break;
-            case 11:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_eleven);
-                break;
-            case 12:
-                side = BitmapFactory.decodeResource(view.getResources(), R.drawable.dom_twelve);
-                break;
-            case 0:
-            default:
-                side = Bitmap.createBitmap(200,200,Bitmap.Config.ARGB_8888);
-                break;
-        }
-        return side;
     }
 
     private class DominoHolder{

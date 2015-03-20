@@ -17,6 +17,8 @@ import game.gamehelper.DominoMT.GameWindowMT;
 public class MainWindow extends ActionBarActivity {
     public static final int MEXICAN_TRAIN = 0;
     public static final int MAX_DOMINO_DISPLAY = 24;
+    public static boolean debug = false;
+
     public int[][] tileList = new int[100][2];
     ArrayList<GameSet> setList = new ArrayList<GameSet>();
     ArrayList<String> playerList = new ArrayList<String>();
@@ -54,6 +56,8 @@ public class MainWindow extends ActionBarActivity {
         newGameButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
+
+                        debug = false;
                         switch(selectedGame) {
 
                             case MEXICAN_TRAIN:
@@ -89,6 +93,8 @@ public class MainWindow extends ActionBarActivity {
         randomButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
+                        debug = true;
+
                         //TODO only works up to 27-ish. 28 if you want to wait a while.
                         randomDominos(24);
                         bundle.clear();
@@ -104,6 +110,8 @@ public class MainWindow extends ActionBarActivity {
         randomScoreBoardButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
+                        debug = true;
+
                         setList.clear();
                         playerList.clear();
                         bundle.clear();
@@ -120,6 +128,7 @@ public class MainWindow extends ActionBarActivity {
         cameraButton.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
+                        debug = true;
                         startActivity(new Intent(MainWindow.this, MainActivity.class));
                     }
                 }
