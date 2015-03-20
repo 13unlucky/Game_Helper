@@ -1,5 +1,7 @@
 package game.gamehelper.DominoMT;
 
+import android.util.Pair;
+
 import java.util.LinkedList;
 
 /**
@@ -307,6 +309,22 @@ public class RunController {
     }
 
     /**
+     * In the case where we want to re-set runs to a previous save, this might save computation time.
+     * @param oldRuns The pair of ordered runs (longest, mostPoints)
+     */
+    public void reSetRuns(Pair<DominoRun, DominoRun> oldRuns) {
+        //skip if we've already re-calculated, or we didn't have the runs at the time.
+        if (pathsAreCurrent || oldRuns == null) {
+            return;
+        }
+
+        //copy in old runs
+        pathsAreCurrent = true;
+        longest = oldRuns.first.deepCopy();
+        mostPoints = oldRuns.second.deepCopy();
+    }
+
+    /**
      * Removes a domino in this graph.
      * Will only throw exceptions when the domino is larger than the maximum domino.
      * @param d The domino to remove.
@@ -393,7 +411,15 @@ public class RunController {
     public void setTrainHead(int head){
         if (head != target) {
             target = head;
-            recalculatePaths();
+            pathsAreCurrent = false;
         }
+    }
+
+    /**
+     * Let's everyone know if the paths in this runcontroller are up-to-date.
+     * @return Returns true if the paths are up to date, false if not.
+     */
+    public boolean isUpToDate() {
+        return pathsAreCurrent;
     }
 }

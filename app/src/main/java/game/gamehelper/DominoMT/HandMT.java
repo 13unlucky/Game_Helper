@@ -1,5 +1,7 @@
 package game.gamehelper.DominoMT;
 
+import android.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -17,7 +19,10 @@ import game.gamehelper.Hand;
  * TODO add remove/add domino functionality.
  */
 
-public class HandMT implements Hand{
+public class HandMT implements Hand {
+    //experimental undo history may cause problems if something goes wrong.
+    private static final boolean enableExperimentalUndoHistory = true;
+
     private ArrayList<Domino> dominoHandHistory;
     private ArrayList<Domino> currentHand;
 
@@ -27,10 +32,12 @@ public class HandMT implements Hand{
     private int totalDominos;
     private final int MAXIMUM_DOUBLE;
     private int trainHead;
+
+    //undo stuff, should probably be made into an UndoObject at this point.
     private Stack<Domino> playHistory = new Stack<>();
     private Stack<Integer> trainHeadHistory = new Stack<>();
     private Stack<Integer> positionPlayedHistory = new Stack<>();
-
+    private Stack<Pair<DominoRun, DominoRun>> runsHistory = new Stack<>();
 
     //Initializes the hand
     //Requires maximum double possible.
@@ -71,23 +78,27 @@ public class HandMT implements Hand{
 
     //Adds a domino to the hand, but only if it doesn't exist
     public void addDomino(Domino d) {
-        for (Domino a : currentHand){
+        for (Domino a : currentHand) {
             if (a.compareTo(d)) {
                 return;
             }
         }
+
+        //Sorta like memoization, remembering previous runs.
+        rememberRuns();
+
         dominoHandHistory.add(d);
         currentHand.add(d);
         totalPointsHand = getTotalPointsHand() + d.getSum();
         runs.addDomino(d);
 
         playHistory.push(d);
-        trainHeadHistory.push(null);
+        trainHeadHistory.push(trainHead);
         positionPlayedHistory.push(null);
     }
 
     //Removes a domino to hand if it exists.
-    public void removeDomino(Domino d) {
+    private void removeDomino(Domino d) {
         for (Domino a : currentHand) {
             if (a.compareTo(d)) {
                 currentHand.remove(a);
@@ -133,6 +144,9 @@ public class HandMT implements Hand{
         positionPlayedHistory.push(position);
         trainHeadHistory.push(trainHead);
 
+        //Sorta like memoization, remembering previous runs.
+        rememberRuns();
+
         //we removed the train head, adjust the train head accordingly.
         if (toRemove.getVal1() == trainHead) {
             trainHead = toRemove.getVal2();
@@ -157,27 +171,45 @@ public class HandMT implements Hand{
 
         Domino lastDomino;
         Integer position;
-        Integer trainHead;
+        Integer savedTrainHead;
+        Pair<DominoRun, DominoRun> oldRuns;
 
         //retrieve last move
         position = positionPlayedHistory.pop();
-        trainHead = trainHeadHistory.pop();
+        savedTrainHead = trainHeadHistory.pop();
         lastDomino = playHistory.pop();
+        oldRuns = runsHistory.pop();
+
+        //in the case we only changed the train head
+        if (position == null && lastDomino == null) {
+            runs.setTrainHead(savedTrainHead);
+            //re-sets the runs if possible, saving calculation time.
+            runs.reSetRuns(oldRuns);
+
+            trainHead = savedTrainHead;
+            return;
+        }
 
         //in the case we added something before (null), we want to remove it now.
         if (position == null) {
             removeDomino(lastDomino);
 
-            //re-set train head to the current one, fixes a bug where the runs decides to "play" the domino.
-            setTrainHead(this.trainHead);
+            //re-set train head to the saved one, fixes a bug where the runs decides to "play" the domino.
+            trainHead = savedTrainHead;
+
+            //re-sets the runs if possible, saving calculation time.
+            runs.reSetRuns(oldRuns);
             return;
         }
 
         //add information back to hand
         currentHand.add(position, lastDomino);
-        runs.reAddDomino(lastDomino, trainHead);
+        runs.reAddDomino(lastDomino, savedTrainHead);
         totalPointsHand += lastDomino.getSum();
-        this.trainHead = trainHead;
+        trainHead = savedTrainHead;
+
+        //re-sets the runs if possible, saving calculation time.
+        runs.reSetRuns(oldRuns);
     }
 
     /**
@@ -205,6 +237,9 @@ public class HandMT implements Hand{
     public Domino[] notMostPointsRun() {
         return null;
     }
+
+    //Returns true if the paths in the run controller are up to date.
+    public boolean runsAreUpToDate() {return runs.isUpToDate(); }
 
     /**
      * Gets the total points of the current hand.
@@ -242,11 +277,25 @@ public class HandMT implements Hand{
     /*
      * Changes current domino head based on manual input in GameWindow
      */
-    public void setTrainHead(int head){
+    public void setTrainHead(int head) {
+        //Sorta like memoization, remembering previous runs.
+        rememberRuns();
+
+        //undo stacks
+        playHistory.push(null);
+        trainHeadHistory.push(trainHead);
+        positionPlayedHistory.push(null);
+
         trainHead = head;
         runs.setTrainHead(head);
     }
 
-
-
+    //so everyone uses the right order!
+    private void rememberRuns() {
+        if (runsAreUpToDate() && enableExperimentalUndoHistory)
+            runsHistory.push(new Pair<DominoRun, DominoRun>
+                    (getLongestRun().deepCopy(), getMostPointRun().deepCopy()));
+        else
+            runsHistory.push(null);
+    }
 }
