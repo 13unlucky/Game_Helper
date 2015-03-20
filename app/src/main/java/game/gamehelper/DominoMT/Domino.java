@@ -59,6 +59,8 @@ public class Domino implements Parcelable {
 
     //Allows comparison between other dominoes
     public boolean compareTo(Domino a) {
+        if( a == null )
+            return false;
         if (val1 == a.getVal1() && val2 == a.getVal2())
             return true;
         if (val1 == a.getVal2() && val2 == a.getVal1())
