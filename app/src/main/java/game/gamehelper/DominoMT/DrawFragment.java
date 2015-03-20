@@ -71,6 +71,8 @@ public class DrawFragment extends DialogFragment {
         if (getDialog() == null)
             return;
 
+        //TODO adjust size calculations
+
         display.getSize(size);
         windowX = size.x - 50;
         windowY = (int)(( deckMax / (size.x / bitmapSize) ) * bitmapSize + 1.5 * sizeOffset);
@@ -82,6 +84,10 @@ public class DrawFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        Bundle b = getArguments();
+        if(b != null)
+            deckMax = b.getInt("maxDouble");
 
         Clicker clickListener = new Clicker();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -105,8 +111,13 @@ public class DrawFragment extends DialogFragment {
                 R.drawable.dom_nine,
                 R.drawable.dom_ten,
                 R.drawable.dom_eleven,
-                R.drawable.dom_twelve
-
+                R.drawable.dom_twelve,
+                R.drawable.dom_thirteen,
+                R.drawable.dom_fourteen,
+                R.drawable.dom_fifteen,
+                R.drawable.dom_sixteen,
+                R.drawable.dom_seventeen,
+                R.drawable.dom_eighteen
         };
 
         //get imageview from top left of layout and place the domino background
@@ -122,7 +133,7 @@ public class DrawFragment extends DialogFragment {
 
         //retrieve gridview from layout, set adapter
         gridView = (GridView)drawView.findViewById(R.id.gridView);
-        bitmapAdapter = new BitmapAdapter(getActivity(), mList);
+        bitmapAdapter = new BitmapAdapter(getActivity(), mList, deckMax);
         bitmapAdapter.setImageSize(bitmapSize);
         gridView.setAdapter(bitmapAdapter);
         gridView.setNumColumns((size.x - 50) / bitmapSize);

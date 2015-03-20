@@ -22,6 +22,7 @@
     <string name="editField">Edit Field</string>
     <string name="endSelect">End Select</string>
     <string name="draw">Draw</string>
+    <string name="newGameMT">New Game MT</string>
 
     <!--DialogFragmentStrings-->
     <string name="newGameText">Start a new game? \nAll data will be deleted</string>

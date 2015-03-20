@@ -30,13 +30,15 @@ import game.gamehelper.MainActivity;
 import game.gamehelper.MainWindow;
 import game.gamehelper.R;
 import game.gamehelper.ScoreBoard;
+import game.gamehelper.DominoMT.NewGameMT;
 
 
 public class GameWindowMT extends ActionBarActivity implements
         ConfirmationFragment.ConfirmationListener,
         DrawFragment.DrawListener,
         EndSelectFragment.EndListener,
-        AdapterView.OnItemClickListener{
+        AdapterView.OnItemClickListener,
+        NewGameMT.NewGameListener{
 
     private static int DOUBLE_NINE = 9;
     private static int DOUBLE_TWELVE = 12;
@@ -144,6 +146,7 @@ public class GameWindowMT extends ActionBarActivity implements
                     @Override
                     public void onClick(View v) {
                         DialogFragment endSelect = new EndSelectFragment();
+                        endSelect.setArguments(handInformation);
                         endSelect.show(getSupportFragmentManager(), "Select_End");
                     }
                 }
@@ -216,7 +219,8 @@ public class GameWindowMT extends ActionBarActivity implements
                     public void onClick(View v) {
 
                         DialogFragment newFragment = new DrawFragment();
-                        newFragment.show(getSupportFragmentManager(), "Draw_Display");
+                        newFragment.setArguments(handInformation);
+                        newFragment.show(getSupportFragmentManager(), getString(R.string.draw));
                     }
                 }
         );
@@ -350,7 +354,7 @@ public class GameWindowMT extends ActionBarActivity implements
 
 
     public void newGameDebug(){
-        //use data passed from main window or camera to create a hand
+        //new game used when randomly generating from title screen
         if(handInformation != null) {
             if (handInformation.getInt("dominoTotal") != 0) {
                 createHand();
@@ -372,11 +376,15 @@ public class GameWindowMT extends ActionBarActivity implements
     }
 
     public void newGame(){
+        //initiate data and settings for new game
         scoreHistory.clear();
         setList.clear();
         playerList.clear();
-        playerList.add("Player 1");
+        maxDouble = 0;
         newSet();
+        DialogFragment newGame = new NewGameMT();
+        newGame.show(getSupportFragmentManager(), getString(R.string.newGameMT));
+
     }
 
     public void newSet(){
@@ -495,5 +503,34 @@ public class GameWindowMT extends ActionBarActivity implements
 
         //update the train head's image
         trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(),getApplicationContext()));
+    }
+
+    @Override
+    public void onNewGameCreate(int set, int player, int rules) {
+        switch (set) {
+            case 0:
+                maxDouble = DOUBLE_NINE;
+                break;
+            case 1:
+                maxDouble = DOUBLE_TWELVE;
+                break;
+            case 2:
+                maxDouble = DOUBLE_FIFTEEN;
+                break;
+            case 3:
+                maxDouble = DOUBLE_EIGHTEEN;
+                break;
+            default:
+                maxDouble = DOUBLE_TWELVE;
+                break;
+        }
+
+        for(int i = 1 ; i <= player ; i++){
+            playerList.add("Player " + i);
+        }
+
+        handInformation.putInt("maxDouble",maxDouble);
+        newSet();
+        updateUI();
     }
 }

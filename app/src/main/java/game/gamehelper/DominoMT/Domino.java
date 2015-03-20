@@ -139,6 +139,24 @@ public class Domino implements Parcelable {
             case 12:
                 side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_twelve);
                 break;
+            case 13:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_thirteen);
+                break;
+            case 14:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_fourteen);
+                break;
+            case 15:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_fifteen);
+                break;
+            case 16:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_sixteen);
+                break;
+            case 17:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_seventeen);
+                break;
+            case 18:
+                side = BitmapFactory.decodeResource(context.getResources(), R.drawable.dom_eighteen);
+                break;
             case 0:
             default:
                 side = Bitmap.createBitmap(200,200,Bitmap.Config.ARGB_8888);

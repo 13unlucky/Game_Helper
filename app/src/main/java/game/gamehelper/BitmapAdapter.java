@@ -14,14 +14,16 @@ public class BitmapAdapter extends BaseAdapter {
     private Context context;
     private int[] imageIds;
     private int imageSize = 200;
+    private int deckSize = 12;
 
-    public BitmapAdapter(Context c, int[] data) {
+    public BitmapAdapter(Context c, int[] data, int size) {
         context = c;
         imageIds = data;
+        deckSize = size;
     }
 
     public int getCount() {
-        return imageIds.length;
+        return deckSize;
     }
 
     public Object getItem(int position) {
@@ -45,6 +47,8 @@ public class BitmapAdapter extends BaseAdapter {
         } else {
             iview = (ImageView) view;
         }
+
+
         iview.setImageResource(imageIds[position]);
         return iview;
     }
