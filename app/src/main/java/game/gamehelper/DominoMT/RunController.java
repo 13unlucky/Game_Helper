@@ -13,12 +13,14 @@ public class RunController {
     private final int TRAIN_HEAD;
     private DominoGraph graph;
     private int target;
+    private static boolean midTrainTrainHeadPlaysAllowed = false;
 
     //debug/stats variables
     private int totalEdgeNum;
     private int repeatPointsFound;
     private int repeatLensFound;
     private int pathsFound;
+    private int numVisited;
 
     //path variables
     private boolean pathsAreCurrent;
@@ -28,8 +30,6 @@ public class RunController {
     private LinkedList<DominoRun> mostPointRuns;
     private LinkedList<DominoRun> longestRuns;
     private DominoRun currentRun;
-
-    private int numVisited;
 
     /**
      * Generates a RunController from a domino edge array.
@@ -67,6 +67,15 @@ public class RunController {
         currentRun = new DominoRun();
     }
 
+    //Getter's & setters for rule field.
+    public static boolean areMidTrainTrainHeadPlaysAllowed() {
+        return midTrainTrainHeadPlaysAllowed;
+    }
+
+    public static void setMidTrainTrainHeadPlaysAllowed(boolean midTrainTrainHeadPlaysAllowed) {
+        RunController.midTrainTrainHeadPlaysAllowed = midTrainTrainHeadPlaysAllowed;
+    }
+
 
     //recalculates longest/most point path. Uses brute force.
     private void recalculatePaths() {
@@ -84,42 +93,50 @@ public class RunController {
         longestRuns.clear();
         currentRun.clear();
 
-        //Start edges must be played on the the start.
-        boolean startEdges[] = graph.dumpEdges(TRAIN_HEAD);
+        //potential for rule change
+        if (!midTrainTrainHeadPlaysAllowed) {
+            //Start edges must be played on the the start.
+            boolean startEdges[] = graph.dumpEdges(TRAIN_HEAD);
 
-        //We blank out the start edges; we can only ever play one off of that one.
-        for (int i = 0; i <= MAX_EDGE; i++) {
-            graph.removeEdgePair(TRAIN_HEAD, i);
-        }
+            //We blank out the start edges; we can only ever play one off of that one.
+            for (int i = 0; i <= MAX_EDGE; i++) {
+                graph.removeEdgePair(TRAIN_HEAD, i);
+            }
 
-        //We need to start on the main domino, so we go through each possible lead-off individually.
-        //Remember, edges that map to the main domino must be played on the main domino.
-        if (target == TRAIN_HEAD) {
-            for (int i = MAX_EDGE; i >= 0; i--) {
-                //if we have a start edge we can play off of, try to play on it.
-                if (startEdges[i]) {
-                    currentRun.clear();
-                    graph.addEdgePair(i, TRAIN_HEAD);
+            //We need to start on the main domino, so we go through each possible lead-off individually.
+            //Remember, edges that map to the main domino must be played on the main domino.
+            if (target == TRAIN_HEAD) {
+                for (int i = MAX_EDGE; i >= 0; i--) {
+                    //if we have a start edge we can play off of, try to play on it.
+                    if (startEdges[i]) {
+                        currentRun.clear();
+                        graph.addEdgePair(i, TRAIN_HEAD);
 
-                    //early exit: if we find one that traverses whole of graph, we can exit early.
-                    if (traverse(MAX_EDGE)) {
+                        //early exit: if we find one that traverses whole of graph, we can exit early.
+                        if (traverse(MAX_EDGE)) {
+                            graph.removeEdgePair(i, TRAIN_HEAD);
+                            break;
+                        }
                         graph.removeEdgePair(i, TRAIN_HEAD);
-                        break;
                     }
-                    graph.removeEdgePair(i, TRAIN_HEAD);
                 }
             }
+            //Normal case: we don't have to play off the main domino.
+            else {
+                currentRun.clear();
+                traverse(target);
+            }
+
+            //Re-add the edges to the main domino at the end.
+            for (int i = 0; i <= MAX_EDGE; i++) {
+                if (startEdges[i])
+                    graph.addEdgePair(TRAIN_HEAD, i);
+            }
         }
-        //Normal case: we don't have to play off the main domino.
+        //If mid-train trainHead plays area allowed, always default toward this.
         else {
             currentRun.clear();
             traverse(target);
-        }
-
-        //Re-add the edges to the main domino at the end.
-        for (int i = 0; i <= MAX_EDGE; i++) {
-            if (startEdges[i])
-                graph.addEdgePair(TRAIN_HEAD, i);
         }
 
         //simple heuristic to remove copy runs. Still will need more processing.

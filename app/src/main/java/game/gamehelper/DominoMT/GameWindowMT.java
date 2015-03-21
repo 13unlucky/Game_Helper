@@ -6,8 +6,6 @@
 package game.gamehelper.DominoMT;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import game.gamehelper.MainActivity;
 import game.gamehelper.MainWindow;
 import game.gamehelper.R;
 import game.gamehelper.ScoreBoard;
-import game.gamehelper.DominoMT.NewGameMT;
 
 
 public class GameWindowMT extends ActionBarActivity implements
@@ -48,7 +45,8 @@ public class GameWindowMT extends ActionBarActivity implements
     private HandMT hand;
     private GridView listView;
     private ImageView trainHeadImage;
-    private TextView text;
+    private TextView pointValText;
+    private TextView titleText;
     private DominoAdapter adapter;
     private Bundle scoreHistory = new Bundle();
     private ArrayList<GameSet> setList = new ArrayList<GameSet>();
@@ -74,13 +72,14 @@ public class GameWindowMT extends ActionBarActivity implements
         handInformation = getIntent().getExtras();
         windowState = WindowContext.SHOWING_UNSORTED;
 
-
-        text = (TextView)findViewById(R.id.remPoint);
+        pointValText = (TextView)findViewById(R.id.remPoint);
+        titleText = (TextView)findViewById(R.id.titleText);
         listView = (GridView) findViewById(R.id.gridViewMain);
         listView.setNumColumns(getResources().getConfiguration().orientation);
         trainHeadImage = (ImageView) findViewById(R.id.imageView2);
 
-        text.setClickable(false);
+        pointValText.setClickable(false);
+        titleText.setClickable(false);
         addButtonBehavior();
 
         listView.setOnItemClickListener(this);
@@ -91,13 +90,6 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
         newGame();
-
-
-        //THIS IS A HACK. REMOVE. USED FOR DEBUGGING PURPOSES.
-//        Domino [] longestRun = hand.getLongestRun().toArray();
-//        adapter = new DominoAdapter(this, R.layout.hand_display_grid, longestRun);
-//        listView.setAdapter(adapter);
-
     }
 
     public void createHand(){
@@ -106,7 +98,7 @@ public class GameWindowMT extends ActionBarActivity implements
         hand = new HandMT((int[][]) handInformation.getSerializable("dominoList"),
                 handInformation.getInt("dominoTotal"), handInformation.getInt("maxDouble"));
 
-        //create domino array for adapter, set text and image to corresponding values
+        //create domino array for adapter, set pointValText and image to corresponding values
         Domino temp[] = hand.toArray();
 
         data = new Domino[(temp.length < MainWindow.MAX_DOMINO_DISPLAY) ? temp.length : MainWindow.MAX_DOMINO_DISPLAY];
@@ -122,13 +114,20 @@ public class GameWindowMT extends ActionBarActivity implements
 
     private void updatePointValueText() {
         if (windowState == WindowContext.SHOWING_LONGEST) {
-            text.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getLongestRun().getPointVal()));
+            titleText.setText("Longest Run");
+            pointValText.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getLongestRun().getPointVal())
+                    + " (" + (hand.getTotalDominos() - hand.getLongestRun().getLength()) + ")");
         }
         else if (windowState == WindowContext.SHOWING_MOST_POINTS) {
-            text.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getMostPointRun().getPointVal()));
+            titleText.setText("Highest Scoring Run");
+            pointValText.setText("Junk Value: " + (hand.getTotalPointsHand() - hand.getMostPointRun().getPointVal())
+                    + " (" + (hand.getTotalDominos() - hand.getMostPointRun().getLength()) + ")");
         }
         else if (windowState == WindowContext.SHOWING_UNSORTED) {
-            text.setText("Hand Value: " + (hand.getTotalPointsHand()));
+            titleText.setText("Unsorted Hand");
+            pointValText.setText("Value: " + (hand.getTotalPointsHand())
+                    + " (" + (hand.getTotalDominos())
+                    + " domino" + ((hand.getTotalDominos() == 1) ? ")" : "s)"));
         }
     }
 

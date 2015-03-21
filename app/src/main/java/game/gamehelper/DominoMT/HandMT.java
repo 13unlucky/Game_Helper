@@ -49,15 +49,13 @@ public class HandMT implements Hand {
 
         //create list of tiles
         for (int[] i : tileList) {
-            if (totalDominos-- <= 0)
+            if (totalTiles-- <= 0)
                 break;
 
             dominoHandHistory.add(new Domino(i[0], i[1]));
             currentHand.add(new Domino(i[0], i[1]));
             totalPointsHand += i[0] + i[1];
         }
-
-        totalDominos = totalTiles;
 
         MAXIMUM_DOUBLE = largestDouble;
         trainHead = MAXIMUM_DOUBLE;
@@ -90,6 +88,7 @@ public class HandMT implements Hand {
         dominoHandHistory.add(d);
         currentHand.add(d);
         totalPointsHand = getTotalPointsHand() + d.getSum();
+        totalDominos++;
         runs.addDomino(d);
 
         playHistory.push(d);
@@ -104,6 +103,7 @@ public class HandMT implements Hand {
                 currentHand.remove(a);
                 totalPointsHand = getTotalPointsHand() - d.getSum();
                 runs.removeDomino(a);
+                totalDominos--;
                 break;
             }
         }
@@ -156,9 +156,7 @@ public class HandMT implements Hand {
         }
 
         //removes the domino & its information from the hand.
-        runs.removeDomino(toRemove);
-        currentHand.remove(toRemove);
-        totalPointsHand = getTotalPointsHand() - toRemove.getSum();
+        removeDomino(toRemove);
     }
 
     /**
@@ -206,6 +204,7 @@ public class HandMT implements Hand {
         currentHand.add(position, lastDomino);
         runs.reAddDomino(lastDomino, savedTrainHead);
         totalPointsHand += lastDomino.getSum();
+        totalDominos++;
         trainHead = savedTrainHead;
 
         //re-sets the runs if possible, saving calculation time.
@@ -249,6 +248,12 @@ public class HandMT implements Hand {
     public int getTotalPointsHand() {
         return totalPointsHand;
     }
+
+    /**
+     * Gets the number of dominoes in this hand.
+     * @return Returns the number of dominos in this hand.
+     */
+    public int getTotalDominos() { return totalDominos; }
 
     /**
      * Converts the current hand to a domino array.

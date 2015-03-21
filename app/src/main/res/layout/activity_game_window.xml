@@ -24,31 +24,34 @@
         android:layout_alignRight="@+id/space" />
 
     <!--Points Remaining-->
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Points Remaining"
-        android:id="@+id/textView2"
+        android:text="Title Menu Text    "
+        android:id="@+id/titleText"
         android:layout_gravity="left|top"
-        android:singleLine="false" />
+        android:singleLine="false"
+        android:inputType="text"
+        android:layout_alignLeft="@+id/space"
+        android:layout_alignRight="@+id/space" />
 
     <!--Point remaining value-->
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
         android:ems="10"
         android:id="@+id/remPoint"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/titleText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_alignEnd="@+id/textView2"
+        android:layout_alignRight="@+id/titleText"
+        android:layout_alignEnd="@+id/titleText"
         android:enabled="false"
         android:focusableInTouchMode="false"
         android:editable="false"
-        android:clickable="false" />
+        android:clickable="false"
+        android:inputType="text" />
 
     <!--Last value played image-->
     <ImageView
