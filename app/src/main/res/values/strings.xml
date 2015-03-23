@@ -23,6 +23,7 @@
     <string name="endSelect">End Select</string>
     <string name="draw">Draw</string>
     <string name="newGameMT">New Game MT</string>
+    <string name="startCamera">Start Camera</string>
 
     <!--DialogFragmentStrings-->
     <string name="newGameText">Start a new game? \nAll data will be deleted</string>
@@ -32,6 +33,7 @@
     <string name="addRowText">Create new player?</string>
     <string name="addColumnText">Create new set?</string>
     <string name="endSelectTitle">Please select the train head</string>
+    <string name="startCameraText">Do you want to use the camera to read your hand?</string>
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
     <string name="yes">Yes</string>
