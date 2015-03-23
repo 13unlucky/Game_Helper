@@ -6,6 +6,7 @@
 package game.gamehelper.DominoMT;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ public class GameWindowMT extends ActionBarActivity implements
     Domino[] data = new Domino[0];
     private int maxDouble = 0;
 
+    private boolean gameStarted = false;
+
     /**
      * Context of a play. Whether we played on the longest, the most points, or the unsorted screen.
      */
@@ -83,6 +86,9 @@ public class GameWindowMT extends ActionBarActivity implements
         addButtonBehavior();
 
         listView.setOnItemClickListener(this);
+
+        if(gameStarted)
+            return;
 
         if(MainWindow.debug){
             newGameDebug();
@@ -324,6 +330,7 @@ public class GameWindowMT extends ActionBarActivity implements
 
             case R.id.action_end_round:
                 //write to scoreboard and wipe hand
+                gameStarted = false;
                 b = new Bundle();
                 b.putString("positive", getString(R.string.yes));
                 b.putString("negative", getString(R.string.cancel));
@@ -353,6 +360,8 @@ public class GameWindowMT extends ActionBarActivity implements
 
 
     public void newGameDebug(){
+        gameStarted = true;
+
         //new game used when randomly generating from title screen
         if(handInformation != null) {
             if (handInformation.getInt("dominoTotal") != 0) {
@@ -375,6 +384,7 @@ public class GameWindowMT extends ActionBarActivity implements
     }
 
     public void newGame(){
+        gameStarted = false;
         //initiate data and settings for new game
         scoreHistory.clear();
         setList.clear();
@@ -406,11 +416,20 @@ public class GameWindowMT extends ActionBarActivity implements
             //create gameset from hand and add to scoreboard
             GameSet newSet = new GameSet(hand);
 
+            DialogFragment fragment = new EndSelectFragment();
+            fragment.setArguments(handInformation);
+            fragment.show(getSupportFragmentManager(), getString(R.string.endSelect));
+
             //add rows for all current players
             for (int i = 1 ; i < playerList.size() ; i++)
                 newSet.addPlayer();
             setList.add(newSet);
             newSet();
+        }
+        else if(tag.compareTo(getString(R.string.startCamera)) == 0){
+            //camera was called on new game
+            startActivityForResult(new Intent(GameWindowMT.this, MainActivity.class),0);
+
         }
 
     }
@@ -430,6 +449,20 @@ public class GameWindowMT extends ActionBarActivity implements
 
         hand.setTrainHead(var1);
         updateUI();
+
+        //call for camera on new game
+        if(!gameStarted && getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            Bundle b = new Bundle();
+            b.putString("mainText", getString(R.string.startCameraText));
+            b.putString("positive", getString(R.string.yes));
+            b.putString("negative", getString(R.string.cancel));
+            b.putString("callName", getString(R.string.startCamera));
+            DialogFragment fragment = new ConfirmationFragment();
+            fragment.setArguments(b);
+            fragment.show(getSupportFragmentManager(), getString(R.string.startCamera));
+        }
+
+        gameStarted = true;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -527,9 +560,11 @@ public class GameWindowMT extends ActionBarActivity implements
         for(int i = 1 ; i <= player ; i++){
             playerList.add("Player " + i);
         }
-
         handInformation.putInt("maxDouble",maxDouble);
         newSet();
-        updateUI();
+
+        DialogFragment fragment = new EndSelectFragment();
+        fragment.setArguments(handInformation);
+        fragment.show(getSupportFragmentManager(), getString(R.string.endSelect));
     }
 }
