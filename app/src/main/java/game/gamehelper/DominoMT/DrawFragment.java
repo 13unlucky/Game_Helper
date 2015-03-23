@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -30,9 +31,10 @@ public class DrawFragment extends DialogFragment {
     public interface DrawListener {
         public void onClose(int var1, int var2);
     }
-
-    int bitmapSize = 100;
-    int deckMax = 12;
+    private static final float TARGET_BITMAP_SIZE = 80.0f;
+    int bitmapSize;
+    int numColumns;
+    int deckMax;
     DrawListener mListener;
     GridView gridView;
     View drawView;
@@ -62,23 +64,15 @@ public class DrawFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        int windowX;
-        int windowY;
-        int sizeOffset;
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        sizeOffset = metrics.densityDpi;
 
         if (getDialog() == null)
             return;
 
         //TODO adjust size calculations
-
-        display.getSize(size);
-        windowX = size.x - 50;
-        windowY = (int)(( deckMax / (size.x / bitmapSize) ) * bitmapSize + 1.5 * sizeOffset);
-
-        getDialog().getWindow().setLayout(windowX,windowY);
-
+        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = size.x;
+        params.height = size.y;
+        getDialog().getWindow().setAttributes(params);
     }
 
     @NonNull
@@ -90,14 +84,17 @@ public class DrawFragment extends DialogFragment {
             deckMax = b.getInt("maxDouble");
 
         Clicker clickListener = new Clicker();
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        bitmapSize = metrics.densityDpi /2 ;
 
         //retrieve draw_layout view
         drawView = View.inflate(getActivity(), R.layout.draw_layout, null);
 
         display = getActivity().getWindowManager().getDefaultDisplay();
         display.getSize(size);
+
+        //set bitmap size
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        bitmapSize = (int) (TARGET_BITMAP_SIZE * metrics.density + .5f);
+        numColumns = size.x / bitmapSize;
 
         int[] mList = new int[] {
                 R.drawable.dom_one,
@@ -136,7 +133,7 @@ public class DrawFragment extends DialogFragment {
         bitmapAdapter = new BitmapAdapter(getActivity(), mList, deckMax);
         bitmapAdapter.setImageSize(bitmapSize);
         gridView.setAdapter(bitmapAdapter);
-        gridView.setNumColumns((size.x - 50) / bitmapSize);
+        gridView.setNumColumns(numColumns);
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

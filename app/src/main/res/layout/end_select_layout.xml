@@ -1,50 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
       android:layout_width="fill_parent"
-    android:layout_height="500dp" >
-
-    <!--Title text-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Train Head"
-        android:gravity="center_horizontal"
-        android:id="@+id/textView3"
-        android:textSize="25dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <!--selected value image-->
-    <ImageView
-        android:layout_width="@dimen/drawPreviewHeight"
-        android:layout_height="fill_parent"
-        android:id="@+id/endValue"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/gridView"
-        android:layout_marginTop="10dp"/>
-
+    android:layout_height="fill_parent" >
 
     <!--Side value grid-->
-    <GridView android:id="@+id/gridView" android:layout_width="match_parent"
+    <GridView android:id="@+id/gridView" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
         android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/space4"
         />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/domSides" />
-
-    <!--bottom panel reference-->
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/space4"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="@dimen/drawPreviewHeight"/>
 
 </RelativeLayout>

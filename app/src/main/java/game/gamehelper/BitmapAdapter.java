@@ -48,8 +48,8 @@ public class BitmapAdapter extends BaseAdapter {
             iview = (ImageView) view;
         }
 
-
         iview.setImageResource(imageIds[position]);
+        iview.setBackground(iview.getResources().getDrawable(R.drawable.side_border));
         return iview;
     }
 }
