@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -31,7 +32,17 @@ public class DrawFragment extends DialogFragment {
     public interface DrawListener {
         public void onClose(int var1, int var2);
     }
-    private static final float TARGET_BITMAP_SIZE = 80.0f;
+
+    /** @param DIALOG_SIZE_COMPENSATION adjust for dialog window being smaller than the specified size
+     *  @param PAGE_MARGIN_PERCENT percent of the screen width to be used for side margins
+     *  @param PORTRAIT_COLUMNS columns for portrait mode
+     *  @param LANDSCAPE_COLUMNS = columns for landscape mode
+     */
+    private static final float DIALOG_SIZE_COMPENSATION = 1.1f;
+    private final float PAGE_MARGIN_PERCENT = 0.1f;
+    private final int PORTRAIT_COLUMNS = 4;
+    private final int LANDSCAPE_COLUMNS = 7;
+    int dialogWidth;
     int bitmapSize;
     int numColumns;
     int deckMax;
@@ -68,33 +79,37 @@ public class DrawFragment extends DialogFragment {
         if (getDialog() == null)
             return;
 
-        //TODO adjust size calculations
+        //set dialog window width
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = size.x;
-        params.height = size.y;
+        params.width = (int) (dialogWidth*DIALOG_SIZE_COMPENSATION);
         getDialog().getWindow().setAttributes(params);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+        int marginSize;
         Bundle b = getArguments();
-        if(b != null)
-            deckMax = b.getInt("maxDouble");
-
         Clicker clickListener = new Clicker();
+
+        if (b != null)
+            deckMax = b.getInt("maxDouble");
 
         //retrieve draw_layout view
         drawView = View.inflate(getActivity(), R.layout.draw_layout, null);
 
+        //get the size of the display and calculate dialog size
         display = getActivity().getWindowManager().getDefaultDisplay();
         display.getSize(size);
+        marginSize = (int) (PAGE_MARGIN_PERCENT*size.x*2);
+        dialogWidth = size.x - (marginSize);
+
+        //get columns based on screen orientation
+        numColumns = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ?
+                PORTRAIT_COLUMNS : LANDSCAPE_COLUMNS);
 
         //set bitmap size
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        bitmapSize = (int) (TARGET_BITMAP_SIZE * metrics.density + .5f);
-        numColumns = size.x / bitmapSize;
+        bitmapSize = dialogWidth / numColumns;
 
         int[] mList = new int[] {
                 R.drawable.dom_one,
