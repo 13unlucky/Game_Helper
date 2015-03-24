@@ -58,7 +58,7 @@ public class HandMT implements Hand {
         }
 
         MAXIMUM_DOUBLE = largestDouble;
-        trainHead = MAXIMUM_DOUBLE;
+        trainHead = 0;
 
         runs = new RunController(this, MAXIMUM_DOUBLE);
     }
@@ -69,7 +69,7 @@ public class HandMT implements Hand {
         currentHand = new ArrayList<Domino>();
         totalDominos = 0;
         MAXIMUM_DOUBLE = largestDouble;
-        trainHead = MAXIMUM_DOUBLE;
+        trainHead = 0;
 
         runs = new RunController(this, MAXIMUM_DOUBLE);
     }
@@ -261,6 +261,18 @@ public class HandMT implements Hand {
      */
     public Domino[] toArray() {
         return currentHand.toArray(new Domino[currentHand.size()]);
+    }
+
+    //returns int[][] for saving between onCreate calls in gameWindow
+    public int[][] smallArray(){
+        int[][] list = new int[getTotalDominos()][2];
+        int i = 0;
+        for(Domino currentDomino : currentHand){
+            list[i][0] = currentDomino.getVal1();
+            list[i][1] = currentDomino.getVal2();
+            i++;
+        }
+        return list;
     }
 
     /**
