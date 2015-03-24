@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -69,7 +70,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Bitmap bitmapGray;
     private Bitmap bitmapBlur;
     private Bitmap bitmapCanny;
-
 
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch(v.getId()) {
             case R.id.countButton:
                 String count = new String();
-                count = Integer.toString(finddominoesInPicture());
+                count = Integer.toString(findDominoesInPicture());
                 countText.setText(count);
                 break;
             case R.id.pictureButton:
@@ -213,8 +213,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             Bitmap bitmap = BitmapFactory.decodeFile(CurrentPhotoPath);
             picture.setImageBitmap(bitmap);
-            countText.setText(CurrentPhotoPath);
-
+            //countText.setText(finddominoesInPicture());
+            // crash if processing step is added here
         }
     }
 
@@ -260,7 +260,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         circles.release();
     }
     */
-    public int finddominoesInPicture()
+    public int findDominoesInPicture()
     {
 
         List<Rect> rectangles = new ArrayList<Rect>();
@@ -284,9 +284,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         //Take MAT and generate grayscale
         Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_BGR2GRAY);
         //make blur from grayscale
-        Imgproc.blur(gray, blur, new Size(3, 3), new Point(0, 0), 2);
+        Imgproc.GaussianBlur(gray, blur, new Size(9, 9), 0);
         //find canny edges from blurred grayscale
-        Imgproc.Canny(blur, canny, 120, 250);
+        Imgproc.Canny(blur, canny, 100, 200);
 
         //find all contours in the canny MAT
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -342,19 +342,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
         }
+        Random rnd = new Random();
+        rnd.setSeed(7);
+
+        //Imgproc.drawContours(rgba, contours, - 1, new Scalar(255,0,0,255));
+
+        for( int i = 0; i< contours.size(); i++ )
+        {
+            Scalar color = new Scalar( rnd.nextInt(255), rnd.nextInt(255),  rnd.nextInt(255) );
+            Imgproc.drawContours(rgba, contours, i, color, 2, 8, hierarchy, 0, new Point(0,0));
+        }
 
 
-        Imgproc.drawContours(rgba, contours, - 1, new Scalar(255,0,0,255));
 
 
 
 
 
-
-
-
-
-        return 0;
+        return circleCenters.size();
     }
 
 
