@@ -36,7 +36,8 @@ public class GameWindowMT extends ActionBarActivity implements
         DrawFragment.DrawListener,
         EndSelectFragment.EndListener,
         AdapterView.OnItemClickListener,
-        NewGameMT.NewGameListener{
+        NewGameMT.NewGameListener,
+        OptionPickerFragment.OptionPickerListener{
 
     private static int DOUBLE_NINE = 9;
     private static int DOUBLE_TWELVE = 12;
@@ -667,5 +668,11 @@ public class GameWindowMT extends ActionBarActivity implements
         saveInformation();
         getIntent().putExtras(handInformation);
         super.onDestroy();
+    }
+
+    @Override
+    public void setOption(int option, int caller) {
+        NewGameMT fragment = (NewGameMT)getSupportFragmentManager().findFragmentByTag(getString(R.string.newGameMT));
+        fragment.setOption(option, caller);
     }
 }
