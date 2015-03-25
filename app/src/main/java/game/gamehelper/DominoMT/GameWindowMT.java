@@ -43,6 +43,7 @@ public class GameWindowMT extends ActionBarActivity implements
     private static int DOUBLE_TWELVE = 12;
     private static int DOUBLE_FIFTEEN = 15;
     private static int DOUBLE_EIGHTEEN = 18;
+    private static int DEFAULT_SET = 12;
 
     private HandMT hand;
     private GridView listView;
@@ -576,7 +577,7 @@ public class GameWindowMT extends ActionBarActivity implements
         listView.setAdapter(adapter);
 
         //update the train head's image
-        trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(),getApplicationContext()));
+        trainHeadImage.setImageBitmap(Domino.getSide(hand.getTrainHead(), getApplicationContext()));
     }
 
     @Override
@@ -617,6 +618,28 @@ public class GameWindowMT extends ActionBarActivity implements
             fragment.show(getSupportFragmentManager(), getString(R.string.endSelect));
         }
 
+    }
+
+    @Override
+    public void onNewGameCancel() {
+        //Create game with default settings if user cancels new game settings window
+
+        loadGame = true;
+        gameTypeSelected = true;
+        trainHeadSelected = true;
+        this.rules = 0;
+        this.players = 1;
+        maxDouble = DEFAULT_SET;
+
+        for (int i = 1; i <= players; i++) {
+            playerList.add("Player " + i);
+        }
+
+        handInformation.putInt("maxDouble", maxDouble);
+        newSet();
+        trainHead = maxDouble;
+        hand.setTrainHead(maxDouble);
+        updateUI();
     }
 
     private void convertSerializable(){
