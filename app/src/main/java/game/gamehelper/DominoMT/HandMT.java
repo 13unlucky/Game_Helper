@@ -1,5 +1,7 @@
 package game.gamehelper.DominoMT;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import game.gamehelper.Hand;
  * TODO add remove/add domino functionality.
  */
 
-public class HandMT implements Hand {
+public class HandMT implements Hand, Parcelable {
     //experimental undo history may cause problems if something goes wrong.
     private static final boolean enableExperimentalUndoHistory = true;
 
@@ -72,6 +74,39 @@ public class HandMT implements Hand {
         trainHead = 0;
 
         runs = new RunController(this, MAXIMUM_DOUBLE);
+    }
+
+    public HandMT(Parcel p){
+        dominoHandHistory = new ArrayList<Domino>();
+        currentHand = new ArrayList<Domino>();
+        ArrayList<Domino> tempDomList = new ArrayList<>();
+        ArrayList<Integer> tempInt = new ArrayList<>();
+        ArrayList<Pair<DominoRun,DominoRun>> tempHistory = new ArrayList<>();
+
+        p.readTypedList(dominoHandHistory, Domino.CREATOR);
+        p.readTypedList(currentHand, Domino.CREATOR);
+        runs = p.readParcelable(DominoRun.class.getClassLoader());
+        totalPointsHand = p.readInt();
+        totalDominos = p.readInt();
+        MAXIMUM_DOUBLE = p.readInt();
+        trainHead = p.readInt();
+
+        p.readTypedList(tempDomList, Domino.CREATOR);
+        for(Domino d: tempDomList)
+            playHistory.push(d);
+
+        tempInt = (ArrayList<Integer>) p.readSerializable();
+        for(Integer i: tempInt)
+            trainHeadHistory.push(i);
+
+        tempInt.clear();
+        tempInt = (ArrayList<Integer>) p.readSerializable();
+        for(Integer i: tempInt)
+            positionPlayedHistory.push(i);
+
+        tempHistory = (ArrayList<Pair<DominoRun, DominoRun>>) p.readSerializable();
+        for(Pair<DominoRun,DominoRun> d: tempHistory)
+            runsHistory.push(d);
     }
 
     //Adds a domino to the hand, but only if it doesn't exist
@@ -315,4 +350,57 @@ public class HandMT implements Hand {
         else
             runsHistory.push(null);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(dominoHandHistory);
+        dest.writeTypedList(currentHand);
+        dest.writeParcelable(runs, 0);
+        dest.writeInt(totalPointsHand);
+        dest.writeInt(totalDominos);
+        dest.writeInt(MAXIMUM_DOUBLE);
+        dest.writeInt(trainHead);
+
+        ArrayList<Domino> tempDomList = new ArrayList<>();
+        ArrayList<Integer> tempInt = new ArrayList<>();
+        ArrayList<Pair<DominoRun,DominoRun>> tempHistory = new ArrayList<>();
+
+        for(Domino d: playHistory)
+            tempDomList.add(d);
+
+        dest.writeTypedList(tempDomList);
+
+        for(Integer i: trainHeadHistory)
+            tempInt.add(i);
+
+        dest.writeSerializable(tempInt);
+        tempInt.clear();
+
+        for(Integer i: positionPlayedHistory)
+            tempInt.add(i);
+
+        dest.writeSerializable(tempInt);
+
+        for(Pair<DominoRun,DominoRun> d: runsHistory)
+            tempHistory.add(d);
+
+        dest.writeSerializable(tempHistory);
+    }
+
+    public static Parcelable.Creator CREATOR = new Parcelable.Creator(){
+        @Override
+        public HandMT createFromParcel(Parcel source) {
+            return new HandMT(source);
+        }
+
+        @Override
+        public HandMT[] newArray(int size) {
+            return new HandMT[size];
+        }
+    };
 }

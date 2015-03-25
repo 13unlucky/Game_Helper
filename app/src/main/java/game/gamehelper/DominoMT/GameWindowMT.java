@@ -620,8 +620,7 @@ public class GameWindowMT extends ActionBarActivity implements
     }
     private void saveInformation(){
         //save information to bundle
-        handInformation.putSerializable("dominoList", hand.smallArray());
-        handInformation.putInt("dominoTotal", hand.getTotalDominos());
+        handInformation.putParcelable("hand", hand);
         handInformation.putInt("maxDouble", maxDouble);
         handInformation.putInt("players", players);
         handInformation.putInt("rules", rules);
@@ -630,14 +629,16 @@ public class GameWindowMT extends ActionBarActivity implements
         handInformation.putBoolean("trainHeadSelected", trainHeadSelected);
         handInformation.putParcelableArrayList("setList", setList);
         handInformation.putStringArrayList("playerList", playerList);
-        handInformation.putInt("trainHead", hand.getTrainHead());
         handInformation.putSerializable("windowState", windowState);
     }
 
     private void loadInformation(){
         //load information
-        dominoList = (int[][]) handInformation.getSerializable("dominoList");
-        dominoTotal = handInformation.getInt("dominoTotal");
+        hand = handInformation.getParcelable("hand");
+        if(hand == null) {
+            dominoList = (int[][]) handInformation.getSerializable("dominoList");
+            dominoTotal = handInformation.getInt("dominoTotal");
+        }
         maxDouble = handInformation.getInt("maxDouble");
         loadGame = handInformation.getBoolean("loadGame");
         gameTypeSelected = handInformation.getBoolean("gameTypeSelected");
@@ -649,14 +650,11 @@ public class GameWindowMT extends ActionBarActivity implements
         if(loadGame) {
             setList = handInformation.getParcelableArrayList("setList");
             playerList = handInformation.getStringArrayList("playerList");
-            hand = new HandMT(maxDouble);
             data = hand.toArray();
         }
         if(trainHeadSelected){
-            trainHead = handInformation.getInt("trainHead");
+            trainHead = hand.getTrainHead();
             windowState = (WindowContext) handInformation.getSerializable("windowState");
-            createHand();
-            hand.setTrainHead(trainHead);
             updateUI();
         }
 

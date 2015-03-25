@@ -113,7 +113,7 @@ public class NewGameMT extends DialogFragment{
                 break;
             case PLAYER_SELECT_OPTION:
                 this.player.setText("" + option);
-                playerOption = option;
+                playerOption = option+1;
                 break;
             case RULES_SELECT_OPTION:
                 this.rules.setText(rules[option]);
