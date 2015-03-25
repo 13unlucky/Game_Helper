@@ -8,15 +8,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import game.gamehelper.Hand;
-/**
- * Author History
- * Jacob
- * Mark
- * Jacob
- */
 
 /**
- * Created by Jacob on 2/11/2015.
+ * Original creation date: 2/11/2015.
  * A hand of Dominoes.
  * TODO add remove/add domino functionality.
  */
@@ -33,6 +27,7 @@ public class HandMT implements Hand, Parcelable {
     private int totalPointsHand = 0;
     private int totalDominos;
     private final int MAXIMUM_DOUBLE;
+    private final int ORIGINAL_TRAIN_HEAD;
     private int trainHead;
 
     //undo stuff, should probably be made into an UndoObject at this point.
@@ -44,7 +39,7 @@ public class HandMT implements Hand, Parcelable {
     //Initializes the hand
     //Requires maximum double possible.
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
-    public HandMT(int[][] tileList, int totalTiles, int largestDouble) {
+    public HandMT(int[][] tileList, int totalTiles, int largestDouble, int startHead) {
         dominoHandHistory = new ArrayList<Domino>();
         currentHand = new ArrayList<Domino>();
         totalDominos = totalTiles;
@@ -59,23 +54,33 @@ public class HandMT implements Hand, Parcelable {
             totalPointsHand += i[0] + i[1];
         }
 
+        //sets final hand size and starting head.
         MAXIMUM_DOUBLE = largestDouble;
-        trainHead = 0;
+        ORIGINAL_TRAIN_HEAD = startHead;
 
-        runs = new RunController(this, MAXIMUM_DOUBLE);
+        //sets current trainhead.
+        trainHead = startHead;
+
+        runs = new RunController(this, ORIGINAL_TRAIN_HEAD);
     }
 
     //NOTE: We have to have the largest double so the pathfinding calculates a legal path.
-    public HandMT(int largestDouble) {
+    public HandMT(int largestDouble, int startHead) {
         dominoHandHistory = new ArrayList<Domino>();
         currentHand = new ArrayList<Domino>();
         totalDominos = 0;
-        MAXIMUM_DOUBLE = largestDouble;
-        trainHead = 0;
 
-        runs = new RunController(this, MAXIMUM_DOUBLE);
+        //sets final hand size and starting head.
+        MAXIMUM_DOUBLE = largestDouble;
+        ORIGINAL_TRAIN_HEAD = startHead;
+
+        //sets current trainhead.
+        trainHead = startHead;
+
+        runs = new RunController(this, ORIGINAL_TRAIN_HEAD);
     }
 
+    //This allows a Hand to be retrieved from a Parcel.
     public HandMT(Parcel p){
         dominoHandHistory = new ArrayList<Domino>();
         currentHand = new ArrayList<Domino>();
@@ -89,6 +94,7 @@ public class HandMT implements Hand, Parcelable {
         totalPointsHand = p.readInt();
         totalDominos = p.readInt();
         MAXIMUM_DOUBLE = p.readInt();
+        ORIGINAL_TRAIN_HEAD = p.readInt();
         trainHead = p.readInt();
 
         p.readTypedList(tempDomList, Domino.CREATOR);
@@ -364,6 +370,7 @@ public class HandMT implements Hand, Parcelable {
         dest.writeInt(totalPointsHand);
         dest.writeInt(totalDominos);
         dest.writeInt(MAXIMUM_DOUBLE);
+        dest.writeInt(ORIGINAL_TRAIN_HEAD);
         dest.writeInt(trainHead);
 
         ArrayList<Domino> tempDomList = new ArrayList<>();

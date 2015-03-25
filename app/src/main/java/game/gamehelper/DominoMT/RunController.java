@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * Created by Jacob on 3/6/2015.
+ * Created on 3/6/2015.
  * Contains run-calculating related algorithms.
  */
 public class RunController implements Parcelable {
@@ -144,10 +144,15 @@ public class RunController implements Parcelable {
                     //if we have a start edge we can play off of, try to play on it.
                     if (startEdges[i]) {
                         currentRun.clear();
+
+                        //if we have the starting double in-hand, add it to this path.
+                        if (startEdges[TRAIN_HEAD] && i != TRAIN_HEAD)
+                            currentRun.addDomino(new Domino(TRAIN_HEAD, TRAIN_HEAD));
+
                         graph.addEdgePair(i, TRAIN_HEAD);
 
                         //early exit: if we find one that traverses whole of graph, we can exit early.
-                        if (traverse(MAX_EDGE)) {
+                        if (traverse(TRAIN_HEAD)) {
                             graph.removeEdgePair(i, TRAIN_HEAD);
                             break;
                         }

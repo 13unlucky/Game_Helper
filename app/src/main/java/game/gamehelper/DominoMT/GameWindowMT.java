@@ -55,11 +55,13 @@ public class GameWindowMT extends ActionBarActivity implements
     private ArrayList<GameSet> setList = new ArrayList<GameSet>();
     private ArrayList<String> playerList = new ArrayList<String>();
     private int trainHead = 0;
+    private int originalStartHead;
 
     /** @param handInformation keys:
      *                         "dominoList" : serializable, int[][] representing hand
      *                         "dominoTotal" : int, total number of dominoes in array
      *                         "maxDouble" : int, highest possible domino in set
+     *                         "originalStartHead" : int, the original starting train head (used for other rule versions)
      *                         "trainHead" : int, current train head
      *                         "windowState" : WindowContext, current hand displayed
      *                         "setList" : parcelableArrayList, for set history
@@ -113,13 +115,13 @@ public class GameWindowMT extends ActionBarActivity implements
 
         listView.setOnItemClickListener(this);
 
-        if(handInformation != null )
+        if (handInformation != null)
             loadInformation();
 
-        if(loadGame)
+        if (loadGame)
             return;
 
-        if(MainWindow.debug){
+        if (MainWindow.debug){
             newGameDebug();
             return;
         }
@@ -127,9 +129,10 @@ public class GameWindowMT extends ActionBarActivity implements
         newGame();
     }
 
+    //Creates hand from camera domino array
     public void createHand(){
 
-        hand = new HandMT(dominoList, dominoTotal, maxDouble);
+        hand = new HandMT(dominoList, dominoTotal, maxDouble, originalStartHead);
         hand.setTrainHead(trainHead);
 
         //create domino array for adapter, set pointValText and image to corresponding values
@@ -399,7 +402,8 @@ public class GameWindowMT extends ActionBarActivity implements
             else
             {
                 maxDouble = handInformation.getInt("maxDouble");
-                hand = new HandMT(maxDouble);
+                originalStartHead = handInformation.getInt("originalStartHead");
+                hand = new HandMT(maxDouble, originalStartHead);
                 data = hand.toArray();
                 updatePointValueText();
             }
@@ -419,19 +423,18 @@ public class GameWindowMT extends ActionBarActivity implements
         setList.clear();
         playerList.clear();
         maxDouble = 0;
+        originalStartHead = -1;
         loadGame = true;
-        if(!gameTypeSelected) {
-            newSet();
+        if (!gameTypeSelected) {
+            newSet(0);
             DialogFragment newGame = new NewGameMT();
             newGame.setCancelable(false);
             newGame.show(getSupportFragmentManager(), getString(R.string.newGameMT));
         }
     }
 
-    public void newSet(){
-
-        //create empty list
-        hand = new HandMT(maxDouble);
+    public void newSet(int maxTrainHead){
+        hand = new HandMT(maxDouble, maxTrainHead);
         data = hand.toArray();
         updateUI();
     }
@@ -463,7 +466,7 @@ public class GameWindowMT extends ActionBarActivity implements
             for (int i = 1 ; i < playerList.size() ; i++)
                 newSet.addPlayer();
             setList.add(newSet);
-            newSet();
+            newSet(0);
         }
         else if(tag.compareTo(getString(R.string.startCamera)) == 0){
             //camera was called on new game
@@ -490,7 +493,14 @@ public class GameWindowMT extends ActionBarActivity implements
         //From end piece select, replace largest double value in hand
 
         trainHead = var1;
-        hand.setTrainHead(var1);
+        //in the case we're starting a hand
+        if (originalStartHead == -1) {
+            originalStartHead = var1;
+            newSet(originalStartHead);
+        }
+
+        hand.setTrainHead(trainHead);
+
         updateUI();
 
         //call for camera on new game
@@ -535,7 +545,7 @@ public class GameWindowMT extends ActionBarActivity implements
                     dominoTotal = b.getInt("dominoTotal");
 
                     saveInformation();
-                    newSet();
+                    newSet(originalStartHead);
                     createHand();
                     updateUI();
                     return;
@@ -546,7 +556,8 @@ public class GameWindowMT extends ActionBarActivity implements
 
             default:
                 //other
-                return;      }
+                return;
+        }
     }
 
     //When each domino is clicked, we delete it from the hand, and update the pictures.
@@ -604,13 +615,11 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
         if(!trainHeadSelected) {
-
             for (int i = 1; i <= player; i++) {
                 playerList.add("Player " + i);
             }
 
             handInformation.putInt("maxDouble", maxDouble);
-            newSet();
 
             DialogFragment fragment = new EndSelectFragment();
             fragment.setArguments(handInformation);
@@ -636,7 +645,7 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
         handInformation.putInt("maxDouble", maxDouble);
-        newSet();
+        newSet(maxDouble);
         trainHead = maxDouble;
         hand.setTrainHead(maxDouble);
         updateUI();
@@ -654,6 +663,7 @@ public class GameWindowMT extends ActionBarActivity implements
         //save information to bundle
         handInformation.putParcelable("hand", hand);
         handInformation.putInt("maxDouble", maxDouble);
+        handInformation.putInt("originalStartHead", originalStartHead);
         handInformation.putInt("players", players);
         handInformation.putInt("rules", rules);
         handInformation.putBoolean("loadGame", loadGame);
@@ -672,6 +682,7 @@ public class GameWindowMT extends ActionBarActivity implements
             convertSerializable();
         }
         maxDouble = handInformation.getInt("maxDouble");
+        originalStartHead = handInformation.getInt("originalStartHead");
         loadGame = handInformation.getBoolean("loadGame");
         gameTypeSelected = handInformation.getBoolean("gameTypeSelected");
         trainHeadSelected = handInformation.getBoolean("trainHeadSelected");
