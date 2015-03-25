@@ -618,6 +618,15 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
     }
+
+    private void convertSerializable(){
+        Object[] object = (Object[])handInformation.getSerializable("dominoList");
+        int i = 0;
+        for(Object o: object){
+            dominoList[i][0] = ((int[])o)[0];
+            dominoList[i++][1] = ((int[])o)[1];
+        }
+    }
     private void saveInformation(){
         //save information to bundle
         handInformation.putParcelable("hand", hand);
@@ -636,8 +645,8 @@ public class GameWindowMT extends ActionBarActivity implements
         //load information
         hand = handInformation.getParcelable("hand");
         if(hand == null) {
-            dominoList = (int[][]) handInformation.getSerializable("dominoList");
             dominoTotal = handInformation.getInt("dominoTotal");
+            convertSerializable();
         }
         maxDouble = handInformation.getInt("maxDouble");
         loadGame = handInformation.getBoolean("loadGame");
