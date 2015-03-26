@@ -7,6 +7,7 @@ package game.gamehelper.DominoMT;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -129,6 +130,7 @@ public class GameWindowMT extends ActionBarActivity implements
         }
 
         newGame();
+        new DominoGenerator().execute(getApplicationContext());
     }
 
     //Creates hand from camera domino array

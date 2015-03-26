@@ -34,7 +34,7 @@ public class DominoAdapter extends ArrayAdapter<Domino> {
         dominoList = new Bitmap[getCount()];
         int i = 0;
         for(Domino d: data){
-            dominoList[i++] = buildDomino(d, context);
+            dominoList[i++] = FileHandler.loadDomino(d.getVal1()*17 + d.getVal2());
         }
     }
 
